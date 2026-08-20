@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sign in — Litmus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/marketing.css" />
+</head>
+<body>
+<script src="js/icons.js"></script>
+
+<div class="auth">
+  <section class="auth-form">
+    <div class="auth-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark"><svg class="icon icon-sm" style="stroke-width:2.2"><use href="#i-grid"/></svg></span>
+        Litmus
+      </a>
+
+      <h1>Welcome back</h1>
+      <p class="lede">Sign in to pick up where you left off.</p>
+
+      <div class="oauth">
+        <a class="btn" href="app.html"><svg class="icon icon-sm"><use href="#i-google"/></svg> Google</a>
+        <a class="btn" href="app.html"><svg class="icon icon-sm"><use href="#i-apple"/></svg> Apple</a>
+      </div>
+
+      <div class="or">or</div>
+
+      <form data-go="app.html">
+        <label class="field">
+          <span class="label">Email</span>
+          <input class="input" type="email" name="email" placeholder="you@example.com" value="nuwan@litmus.so" required />
+        </label>
+
+        <label class="field">
+          <span class="label">Password</span>
+          <span class="input-wrap">
+            <input class="input" type="password" name="password" placeholder="••••••••" value="demopassword" required />
+            <button type="button" class="peek" data-peek aria-label="Show password">
+              <svg class="icon icon-sm"><use href="#i-eye"/></svg>
+            </button>
+          </span>
+        </label>
+
+        <div class="field-row">
+          <label><span class="check" aria-checked="true" style="background:var(--accent);border-color:var(--accent);color:#fff"><svg class="icon"><use href="#i-check"/></svg></span> Remember me</label>
+          <a href="forgot.html">Forgot password?</a>
+        </div>
+
+        <button class="btn btn--primary btn--lg btn--block" type="submit">Sign in</button>
+      </form>
+
+      <p class="auth-alt">Don't have an account? <a href="register.html">Sign up</a></p>
+    </div>
+  </section>
+
+  <aside class="auth-aside">
+    <h2>Plan your week with clarity.</h2>
+    <p>Litmus brings your tasks, projects, and notes into one calm, focused workspace.</p>
+    <div class="trust">
+      <span class="avatar-stack">
+        <span class="avatar" data-color="peach">NK</span>
+        <span class="avatar" data-color="mint">AL</span>
+        <span class="avatar" data-color="pink">JS</span>
+      </span>
+      Trusted by 12,000+ focused teams
+    </div>
+
+    <div class="float float--a">
+      <b>Finalize onboarding flow</b>
+      <span class="row"><span class="chip" data-color="lav"><i class="dot"></i>Design</span><span>2:00 PM · 2/5</span></span>
+    </div>
+    <div class="float float--b">
+      <b>Sprint retro &amp; planning</b>
+      <span class="row"><span class="chip" data-color="yellow"><i class="dot"></i>Meeting</span><span>10:00 AM · 0/3</span></span>
+    </div>
+  </aside>
+</div>
+
+<script src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Litmus — The calm home for your week</title>
+<meta name="description" content="Litmus unifies your weekly tasks, projects, and notes in one minimal, focused workspace." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/marketing.css" />
+</head>
+<body>
+<script src="js/icons.js"></script>
+
+<div class="site">
+
+  <header class="site-nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"><svg class="icon icon-sm" style="stroke-width:2.2"><use href="#i-grid"/></svg></span>
+      Litmus
+    </a>
+    <nav class="links">
+      <a href="#modules">Features</a>
+      <a href="#modules">Modules</a>
+      <a href="#why">Pricing</a>
+      <a href="#why">Changelog</a>
+    </nav>
+    <div class="actions">
+      <button class="btn--icon" data-theme-toggle title="Toggle dark mode"><svg class="icon"><use href="#i-moon"/></svg></button>
+      <a class="btn btn--ghost" href="login.html">Log in</a>
+      <a class="btn btn--primary" href="app.html">Get started</a>
+    </div>
+  </header>
+
+  <!-- ============================================================ hero -->
+  <section class="hero">
+    <span class="badge"><svg class="icon icon-sm"><use href="#i-sparkle"/></svg> Now with a full Notes module</span>
+    <h1>The calm home for your week.</h1>
+    <p class="lede">
+      Litmus unifies your weekly tasks, projects, and notes in one minimal, focused
+      workspace — so you always know what to do next.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn--primary btn--lg" href="app.html">
+        Get started free <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+      </a>
+      <a class="btn btn--lg" href="app.html">
+        <svg class="icon icon-sm"><use href="#i-play"/></svg> Watch demo
+      </a>
+    </div>
+    <p class="fineprint">Free forever · No credit card required</p>
+
+    <!-- app preview -->
+    <a class="preview" href="app.html" aria-label="Open the Litmus workspace">
+      <div class="preview-chrome">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="urlbar">app.litmus.so/week</span>
+      </div>
+      <div class="preview-body">
+        <div class="preview-head">
+          <b>My Week</b><span>August 10 – 16, 2026</span>
+        </div>
+        <div class="preview-board">
+          <div class="preview-col">
+            <header>Mon <span>10</span></header>
+            <div class="mini"><b>Onboarding wireframes</b>
+              <span class="row"><span class="chip" data-color="lav"><i class="dot"></i>Design</span><span>2:00 PM · 2/5</span></span></div>
+            <div class="mini"><b>Team sync</b>
+              <span class="row"><span class="chip" data-color="yellow"><i class="dot"></i>Meeting</span><span>10:00 AM · 0/3</span></span></div>
+          </div>
+          <div class="preview-col">
+            <header>Tue <span>11</span></header>
+            <div class="mini"><b>Auth endpoints</b>
+              <span class="row"><span class="chip" data-color="blue"><i class="dot"></i>Dev</span><span>All day · 4/8</span></span></div>
+          </div>
+          <div class="preview-col">
+            <header>Wed <span>12</span></header>
+            <div class="mini"><b>Launch newsletter</b>
+              <span class="row"><span class="chip" data-color="peach"><i class="dot"></i>Marketing</span><span>11:00 AM · 3/6</span></span></div>
+          </div>
+          <div class="preview-col">
+            <header style="color:var(--accent)">Thu <span>13</span></header>
+            <div class="mini"><b>Polish empty states</b>
+              <span class="row"><span class="chip" data-color="lav"><i class="dot"></i>Design</span><span>9:30 AM · 1/4</span></span></div>
+            <div class="mini"><b>Dentist</b>
+              <span class="row"><span class="chip" data-color="pink"><i class="dot"></i>Personal</span><span>5:15 PM · 0/1</span></span></div>
+          </div>
+          <div class="preview-col">
+            <header>Fri <span>14</span></header>
+            <div class="mini"><b>Sprint retro &amp; planning</b>
+              <span class="row"><span class="chip" data-color="yellow"><i class="dot"></i>Meeting</span><span>3:00 PM · 0/4</span></span></div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </section>
+
+  <!-- ========================================================= modules -->
+  <section class="section section--tint" id="modules">
+    <span class="eyebrow">Modules</span>
+    <h2>Three tools, one calm flow.</h2>
+    <p class="sub">Tasks, projects, and notes that actually talk to each other — no more juggling five apps.</p>
+
+    <div class="cards">
+      <article class="module" data-color="lav">
+        <span class="module-icon"><svg class="icon icon-lg"><use href="#i-calendar"/></svg></span>
+        <h3>Week</h3>
+        <p>Plan every day on a simple kanban board. Drag tasks between days, set a due date, and always know what's next.</p>
+        <a href="app.html#week">Learn more <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg></a>
+      </article>
+
+      <article class="module" data-color="mint">
+        <span class="module-icon"><svg class="icon icon-lg"><use href="#i-folder"/></svg></span>
+        <h3>Projects</h3>
+        <p>Group related work, track progress at a glance, and schedule project tasks straight into your week.</p>
+        <a href="app.html#projects">Learn more <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg></a>
+      </article>
+
+      <article class="module" data-color="peach">
+        <span class="module-icon"><svg class="icon icon-lg"><use href="#i-note"/></svg></span>
+        <h3>Notes</h3>
+        <p>A WYSIWYG markdown editor with nested folders, backlinks, and links to any project or task.</p>
+        <a href="app.html#notes">Learn more <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================= why -->
+  <section class="section" id="why">
+    <span class="eyebrow">Why Litmus</span>
+    <h2>Everything in its right place.</h2>
+
+    <div class="grid-features">
+      <div class="feature">
+        <span class="feature-icon"><svg class="icon"><use href="#i-moon"/></svg></span>
+        <h3>Dark mode</h3>
+        <p>A calm dark theme that's easy on the eyes, day or night.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"><svg class="icon"><use href="#i-bolt"/></svg></span>
+        <h3>Fast &amp; light</h3>
+        <p>Instant load, keyboard-first, and buttery drag-and-drop.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"><svg class="icon"><use href="#i-link"/></svg></span>
+        <h3>Everything links</h3>
+        <p>Connect notes to projects and tasks — context always follows.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"><svg class="icon"><use href="#i-command"/></svg></span>
+        <h3>Command palette</h3>
+        <p>Jump anywhere and link anything in a couple of keystrokes.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"><svg class="icon"><use href="#i-phone"/></svg></span>
+        <h3>Web &amp; mobile</h3>
+        <p>A layout tuned for desktop and a focused view on your phone.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"><svg class="icon"><use href="#i-lock"/></svg></span>
+        <h3>Your data, yours</h3>
+        <p>Private by default. Export anytime, no lock-in.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ band -->
+  <section class="band">
+    <h2>Ready to plan your week?</h2>
+    <p>Join 12,000+ people who found their calm with Litmus. Free forever.</p>
+    <a class="btn btn--lg" href="app.html">Get started free <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg></a>
+  </section>
+
+  <!-- ========================================================== footer -->
+  <footer class="site-foot">
+    <div class="foot-top">
+      <div>
+        <a class="brand" href="index.html">
+          <span class="brand-mark"><svg class="icon icon-sm" style="stroke-width:2.2"><use href="#i-grid"/></svg></span>
+          Litmus
+        </a>
+        <p>The calm home for your week.</p>
+        <div class="socials">
+          <a href="#" aria-label="Twitter"><svg class="icon icon-sm"><use href="#i-twitter"/></svg></a>
+          <a href="#" aria-label="GitHub"><svg class="icon icon-sm"><use href="#i-github"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg class="icon icon-sm"><use href="#i-linkedin"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Product</h4>
+          <a href="app.html#week">Week</a><a href="app.html#projects">Projects</a>
+          <a href="app.html#notes">Notes</a><a href="#why">Pricing</a>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a>
+        </div>
+        <div class="foot-col">
+          <h4>Resources</h4>
+          <a href="#">Docs</a><a href="#">Changelog</a><a href="#">Support</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Litmus. All rights reserved.</span>
+      <nav><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></nav>
+    </div>
+  </footer>
+</div>
+
+<script src="js/site.js"></script>
+</body>
+</html>

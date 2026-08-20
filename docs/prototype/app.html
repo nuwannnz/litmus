@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Litmus — Workspace</title>
+<meta name="description" content="The calm home for your week." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+
+<script src="js/icons.js"></script>
+
+<div class="app">
+
+  <!-- ================================================ rail ============== -->
+  <nav class="rail" aria-label="Primary">
+    <a class="rail-logo desktop-only" href="index.html" title="Back to the landing page">
+      <svg class="icon icon-lg" style="stroke-width:2"><use href="#i-grid"/></svg>
+    </a>
+
+    <div class="rail-nav">
+      <button class="rail-item" data-nav="week" aria-current="page">
+        <svg class="icon icon-lg"><use href="#i-calendar"/></svg><span>Week</span>
+      </button>
+      <button class="rail-item" data-nav="projects">
+        <svg class="icon icon-lg"><use href="#i-folder"/></svg><span>Projects</span>
+      </button>
+      <button class="rail-item" data-nav="notes">
+        <svg class="icon icon-lg"><use href="#i-note"/></svg><span>Notes</span>
+      </button>
+    </div>
+
+    <div class="rail-foot desktop-only">
+      <button class="btn--icon" data-action="theme" title="Toggle dark mode">
+        <svg class="icon"><use href="#i-moon"/></svg>
+      </button>
+      <button class="btn--icon" data-action="palette" title="Command palette (⌘K)">
+        <svg class="icon"><use href="#i-command"/></svg>
+      </button>
+      <span class="avatar" data-color="peach" title="Nuwan K.">NK</span>
+    </div>
+  </nav>
+
+  <!-- ================================================ main ============== -->
+  <main class="main">
+
+    <!-- ---------------------------------------------- week -------------- -->
+    <section class="view" id="view-week">
+      <header class="topbar">
+        <div>
+          <h1>My Week</h1>
+          <p class="sub" id="week-sub"></p>
+        </div>
+        <div class="topbar-tools">
+          <label class="search desktop-only">
+            <svg class="icon icon-sm"><use href="#i-search"/></svg>
+            <input type="search" id="task-search" placeholder="Search tasks" aria-label="Search tasks" />
+          </label>
+          <div class="stepper">
+            <button data-action="week-prev" title="Previous week"><svg class="icon icon-sm"><use href="#i-left"/></svg></button>
+            <button data-action="week-next" title="Next week"><svg class="icon icon-sm"><use href="#i-right"/></svg></button>
+          </div>
+          <button class="btn" data-action="week-today">
+            <svg class="icon icon-sm"><use href="#i-calendar"/></svg> Today
+          </button>
+          <button class="btn btn--primary" data-action="new-task">
+            <svg class="icon icon-sm"><use href="#i-plus"/></svg> New Task
+          </button>
+        </div>
+      </header>
+      <div class="day-pills mobile-only" id="day-pills"></div>
+      <div class="board" id="board"></div>
+    </section>
+
+    <!-- ---------------------------------------------- projects ---------- -->
+    <section class="view" id="view-projects" hidden>
+      <header class="topbar">
+        <div>
+          <h1>Projects</h1>
+          <p class="sub" id="projects-sub"></p>
+        </div>
+        <div class="topbar-tools">
+          <label class="search">
+            <svg class="icon icon-sm"><use href="#i-search"/></svg>
+            <input type="search" id="project-search" placeholder="Search projects" aria-label="Search projects" />
+          </label>
+          <div class="segmented desktop-only" id="layout-switch">
+            <button data-layout="grid" aria-pressed="true" title="Grid"><svg class="icon icon-sm"><use href="#i-grid"/></svg></button>
+            <button data-layout="list" aria-pressed="false" title="List"><svg class="icon icon-sm"><use href="#i-rows"/></svg></button>
+          </div>
+          <button class="btn btn--primary" data-action="new-project">
+            <svg class="icon icon-sm"><use href="#i-plus"/></svg> New Project
+          </button>
+        </div>
+      </header>
+      <div id="projects-body" style="display:flex;flex-direction:column;flex:1;min-height:0"></div>
+    </section>
+
+    <!-- ---------------------------------------------- project detail ---- -->
+    <section class="view" id="view-project" hidden></section>
+
+    <!-- ---------------------------------------------- notes ------------- -->
+    <section class="view" id="view-notes" hidden>
+      <div class="notes" id="notes-root">
+        <aside class="notes-side">
+          <div class="notes-side-head">
+            <h2>Notes</h2>
+            <button class="btn--icon" data-action="new-note" title="New note"><svg class="icon"><use href="#i-note"/></svg></button>
+            <button class="btn--icon" data-action="new-folder" title="New folder"><svg class="icon"><use href="#i-folder"/></svg></button>
+          </div>
+          <label class="search">
+            <svg class="icon icon-sm"><use href="#i-search"/></svg>
+            <input type="search" id="note-search" placeholder="Search notes" aria-label="Search notes" />
+          </label>
+          <div class="tree" id="tree"></div>
+        </aside>
+        <div class="editor" id="editor"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- task detail panel, modals, palette and toasts mount here -->
+<div id="panel-root"></div>
+<div id="modal-root"></div>
+<div class="toasts" id="toasts"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

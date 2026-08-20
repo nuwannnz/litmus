@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reset password — Litmus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/marketing.css" />
+</head>
+<body>
+<script src="js/icons.js"></script>
+
+<div class="auth">
+  <section class="auth-form">
+    <div class="auth-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark"><svg class="icon icon-sm" style="stroke-width:2.2"><use href="#i-grid"/></svg></span>
+        Litmus
+      </a>
+
+      <h1>Reset your password</h1>
+      <p class="lede">Enter your account email and we'll send you a secure link to reset it.</p>
+
+      <form data-go="login.html">
+        <label class="field">
+          <span class="label">Email</span>
+          <input class="input" type="email" name="email" placeholder="you@example.com" value="nuwan@litmus.so" required />
+        </label>
+
+        <button class="btn btn--primary btn--lg btn--block" type="submit">Send reset link</button>
+      </form>
+
+      <p class="auth-alt">Remembered it? <a href="login.html">Back to sign in</a></p>
+    </div>
+  </section>
+
+  <aside class="auth-aside">
+    <h2>A fresh start is one link away.</h2>
+    <p>We'll get you back into your workspace in no time.</p>
+    <div class="trust">
+      <span class="avatar-stack">
+        <span class="avatar" data-color="peach">NK</span>
+        <span class="avatar" data-color="mint">AL</span>
+        <span class="avatar" data-color="pink">JS</span>
+      </span>
+      Trusted by 12,000+ focused teams
+    </div>
+
+    <div class="float float--a">
+      <b>Finalize onboarding flow</b>
+      <span class="row"><span class="chip" data-color="lav"><i class="dot"></i>Design</span><span>2:00 PM · 2/5</span></span>
+    </div>
+    <div class="float float--b">
+      <b>Sprint retro &amp; planning</b>
+      <span class="row"><span class="chip" data-color="yellow"><i class="dot"></i>Meeting</span><span>10:00 AM · 0/3</span></span>
+    </div>
+  </aside>
+</div>
+
+<script src="js/site.js"></script>
+</body>
+</html>

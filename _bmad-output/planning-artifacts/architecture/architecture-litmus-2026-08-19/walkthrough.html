@@ -1,0 +1,760 @@
+<title>Litmus Architecture Spine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap">
+
+<style>
+  /* ---- Palette is Litmus's own 21 design tokens. The document is themed by the
+         product it describes; accent and every dot-* value are theme-invariant,
+         exactly as the token table specifies. ---- */
+  :root {
+    --ground:  #F7F6F3;
+    --surface: #FFFFFF;
+    --sidebar: #FFFFFF;
+    --ink:     #3A3A46;
+    --muted:   #9B9BA8;
+    --faint:   #BEBECB;
+    --line:    #EFEDE9;
+    --accent:  #4A72E0;
+
+    --pastel-lav: #E5EAFB;
+    --pastel-mint: #D6EFE4;
+    --pastel-peach: #FBE0D2;
+    --pastel-blue: #D8E8F7;
+    --pastel-yellow: #FBEFC9;
+    --pastel-pink: #FAD8E4;
+
+    --dot-lav: #6C8AE8;
+    --dot-mint: #8ED3B5;
+    --dot-peach: #F3B18C;
+    --dot-blue: #93BEE8;
+    --dot-yellow: #EBCB72;
+    --dot-pink: #EE9CBE;
+
+    --tag-ink: #3A3A46;
+
+    --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --measure: 68ch;
+    --gutter: 7.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:  #15151B;
+      --surface: #1F1F28;
+      --sidebar: #1A1A21;
+      --ink:     #ECECF2;
+      --muted:   #8B8B99;
+      --faint:   #565662;
+      --line:    #2B2B35;
+
+      --pastel-lav: #232D48;
+      --pastel-mint: #22352C;
+      --pastel-peach: #3B2E26;
+      --pastel-blue: #233240;
+      --pastel-yellow: #393324;
+      --pastel-pink: #3B2831;
+
+      --tag-ink: #ECECF2;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:  #15151B;
+    --surface: #1F1F28;
+    --sidebar: #1A1A21;
+    --ink:     #ECECF2;
+    --muted:   #8B8B99;
+    --faint:   #565662;
+    --line:    #2B2B35;
+
+    --pastel-lav: #232D48;
+    --pastel-mint: #22352C;
+    --pastel-peach: #3B2E26;
+    --pastel-blue: #233240;
+    --pastel-yellow: #393324;
+    --pastel-pink: #3B2831;
+
+    --tag-ink: #ECECF2;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: calc(var(--measure) + var(--gutter) + 4rem);
+    margin: 0 auto;
+    padding: 4rem 1.5rem 7rem;
+  }
+
+  /* Spec-sheet gutter: identifier left, clause right. Collapses under 900px. */
+  .row {
+    display: grid;
+    grid-template-columns: var(--gutter) minmax(0, 1fr);
+    gap: 0 2rem;
+    align-items: start;
+  }
+  .row > .mark {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--faint);
+    padding-top: 0.42rem;
+    text-align: right;
+  }
+  @media (max-width: 900px) {
+    .row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .row > .mark { text-align: left; padding-top: 0; margin-bottom: 0.35rem; }
+    :root { --gutter: 0rem; }
+  }
+
+  h1, h2, h3 {
+    font-family: var(--display);
+    text-wrap: balance;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); line-height: 1.04; font-weight: 700; }
+  h2 { font-size: clamp(1.5rem, 3.2vw, 2rem); line-height: 1.15; }
+  h3 { font-size: 1.0625rem; line-height: 1.35; font-weight: 600; letter-spacing: -0.005em; }
+
+  p { margin: 0; max-width: var(--measure); }
+  .stack { display: flex; flex-direction: column; gap: 1rem; }
+  .stack-lg { display: flex; flex-direction: column; gap: 1.75rem; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .lede { font-size: 1.125rem; color: var(--ink); }
+  .sub { color: var(--muted); }
+  .sub-sm { color: var(--muted); font-size: 0.9375rem; }
+
+  header.masthead {
+    display: flex; flex-direction: column; gap: 1.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.75rem;
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+  }
+  .meta b { color: var(--ink); font-weight: 500; }
+
+  section { padding-top: 3.5rem; }
+
+  /* Litmus's own tag component: pastel ground + its paired dot. */
+  .tag {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.2rem 0.65rem 0.2rem 0.5rem;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--tag-ink);
+    white-space: nowrap;
+  }
+  .tag .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex: none; }
+
+  .g-domain  { background: var(--pastel-lav); }    .g-domain .dot  { background: var(--dot-lav); }
+  .g-data    { background: var(--pastel-mint); }   .g-data .dot    { background: var(--dot-mint); }
+  .g-contract{ background: var(--pastel-peach); }  .g-contract .dot{ background: var(--dot-peach); }
+  .g-client  { background: var(--pastel-blue); }   .g-client .dot  { background: var(--dot-blue); }
+  .g-surface { background: var(--pastel-yellow); } .g-surface .dot { background: var(--dot-yellow); }
+  .g-ops     { background: var(--pastel-pink); }   .g-ops .dot     { background: var(--dot-pink); }
+
+  .group-head {
+    display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .group-head .count { font-family: var(--mono); font-size: 0.75rem; color: var(--faint); }
+
+  .clause { padding: 1.4rem 0; border-bottom: 1px solid var(--line); }
+  .clause:last-child { border-bottom: 0; }
+  .clause h3 { margin-bottom: 0.55rem; }
+  .clause dl { margin: 0.55rem 0 0; display: grid; gap: 0.35rem; }
+  .clause dt {
+    font-family: var(--mono); font-size: 0.67rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted);
+  }
+  .clause dd { margin: 0 0 0.5rem; max-width: var(--measure); }
+  .clause dd:last-child { margin-bottom: 0; }
+
+  code, .m {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    padding: 0.08em 0.34em;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.5rem 1.6rem;
+  }
+
+  .tbl-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; min-width: 30rem; }
+  th, td { text-align: left; padding: 0.62rem 1rem 0.62rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--mono); font-size: 0.67rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); font-weight: 500;
+    border-bottom-color: var(--ink);
+  }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  .fig { margin: 0; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .fig figcaption { font-size: 0.8125rem; color: var(--muted); margin-top: 0.9rem; }
+
+  .cut { padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
+  .cut:last-child { border-bottom: 0; }
+  .cut h3 { margin-bottom: 0.3rem; }
+  .cut .verdict {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent);
+  }
+
+  ul.plain { margin: 0; padding-left: 1.15rem; max-width: var(--measure); }
+  ul.plain li { margin-bottom: 0.45rem; }
+  ul.plain li::marker { color: var(--faint); }
+
+  .rule-off { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">Architecture spine · build substrate</p>
+    <h1>Litmus</h1>
+    <p class="lede" style="max-width: 58ch;">A personal week planner with projects attached — one task, seen two ways. This is the contract that keeps those two ways from drifting apart.</p>
+    <div class="meta">
+      <span><b>27</b> invariants</span>
+      <span><b>3</b> environments</span>
+      <span>Decided <b>19 Aug 2026</b></span>
+      <span>Versions verified <b>live</b></span>
+      <span>Status <b>final</b></span>
+    </div>
+  </header>
+
+  <section>
+    <div class="row">
+      <p class="mark">00</p>
+      <div class="stack">
+        <h2>The one idea</h2>
+        <p>Planning a week and running a project are the same information at two angles. Litmus has <em>one</em> Task. It sits in a Project because that is what it is part of, and the moment it gets a due date it appears on the Week Board on that day, because that is when you intend to do it.</p>
+        <p>Both surfaces are projections of the same thing. Neither is the source of truth. Every serious risk in this build comes from that one sentence being easy to write and easy to violate — an implementation that treats Week Board and Project Board as two independent screens will drift on status, on progress, and on what day a task belongs to, and it will do so quietly.</p>
+        <p>So the architecture puts the shared thing in the middle and makes the surfaces depend on it. A <strong>core</strong> owns the entities and every rule derived from them. <strong>Feature modules</strong> are projections over that core: they own how work is shown, never what work is. Same shape on both sides of the wire.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <p class="mark">01</p>
+      <div class="stack-lg">
+        <h2>The shape</h2>
+        <figure class="fig panel">
+          <svg viewBox="0 0 720 300" role="img" aria-label="Dependency diagram: the shell depends on feature modules, which depend on shared core libraries. Feature modules never depend on one another.">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--faint)"></path>
+              </marker>
+            </defs>
+            <g font-family="IBM Plex Mono, monospace" font-size="11.5">
+              <rect x="270" y="14" width="180" height="38" rx="9" fill="var(--surface)" stroke="var(--line)"></rect>
+              <text x="360" y="38" text-anchor="middle" fill="var(--ink)">apps/web · shell</text>
+
+              <rect x="40"  y="112" width="180" height="38" rx="9" fill="var(--pastel-yellow)" stroke="var(--line)"></rect>
+              <text x="130" y="136" text-anchor="middle" fill="var(--tag-ink)">features/weeks</text>
+
+              <rect x="270" y="112" width="180" height="38" rx="9" fill="var(--pastel-yellow)" stroke="var(--line)"></rect>
+              <text x="360" y="136" text-anchor="middle" fill="var(--tag-ink)">features/projects</text>
+
+              <rect x="500" y="112" width="180" height="38" rx="9" fill="var(--surface)" stroke="var(--line)" stroke-dasharray="4 4"></rect>
+              <text x="590" y="136" text-anchor="middle" fill="var(--muted)">features/notes · v2</text>
+
+              <rect x="40" y="196" width="640" height="88" rx="12" fill="var(--pastel-lav)" stroke="var(--line)"></rect>
+              <text x="60" y="218" fill="var(--muted)" font-size="10" letter-spacing="1.2">CORE — OWNS THE DOMAIN</text>
+              <g fill="var(--tag-ink)" text-anchor="middle">
+                <text x="130" y="252">core/domain</text>
+                <text x="290" y="252">core/tasks</text>
+                <text x="440" y="252">core/api</text>
+                <text x="590" y="252">core/ui</text>
+                <text x="130" y="268" font-size="9.5" fill="var(--muted)">entities · derivations</text>
+                <text x="290" y="268" font-size="9.5" fill="var(--muted)">card · detail panel</text>
+                <text x="440" y="268" font-size="9.5" fill="var(--muted)">client · keys · mutations</text>
+                <text x="590" y="268" font-size="9.5" fill="var(--muted)">tokens · primitives</text>
+              </g>
+
+              <g stroke="var(--faint)" fill="none" marker-end="url(#ar)">
+                <path d="M 330 54 L 160 108"></path>
+                <path d="M 360 54 L 360 108"></path>
+                <path d="M 390 54 L 560 108"></path>
+                <path d="M 130 152 L 130 192"></path>
+                <path d="M 360 152 L 360 192"></path>
+                <path d="M 590 152 L 590 192"></path>
+              </g>
+
+              <g stroke="var(--dot-peach)" fill="none" stroke-dasharray="5 4">
+                <path d="M 224 131 L 266 131"></path>
+                <path d="M 454 131 L 496 131"></path>
+              </g>
+              <text x="360" y="176" text-anchor="middle" fill="var(--dot-peach)" font-size="10">features never depend on one another</text>
+            </g>
+          </svg>
+          <figcaption>Dependencies flow one way: shell → feature → core. Enforced by Nx tags on the TypeScript side and one-way project references on the .NET side, so a violation fails the build rather than a review.</figcaption>
+        </figure>
+
+        <figure class="fig panel">
+          <svg viewBox="0 0 720 250" role="img" aria-label="Runtime topology: browser loads the SPA from CloudFront over S3, authenticates against Cognito, and calls a single .NET Lambda behind an API Gateway HTTP API, which reads and writes one DynamoDB table.">
+            <g font-family="IBM Plex Mono, monospace" font-size="11">
+              <rect x="20" y="98" width="130" height="50" rx="10" fill="var(--surface)" stroke="var(--ink)"></rect>
+              <text x="85" y="120" text-anchor="middle" fill="var(--ink)">Browser</text>
+              <text x="85" y="136" text-anchor="middle" fill="var(--muted)" font-size="9.5">React SPA</text>
+
+              <rect x="215" y="20" width="130" height="46" rx="10" fill="var(--pastel-mint)" stroke="var(--line)"></rect>
+              <text x="280" y="41" text-anchor="middle" fill="var(--tag-ink)">CloudFront</text>
+              <text x="280" y="56" text-anchor="middle" fill="var(--muted)" font-size="9.5">S3 · static bundle</text>
+
+              <rect x="215" y="176" width="130" height="46" rx="10" fill="var(--pastel-pink)" stroke="var(--line)"></rect>
+              <text x="280" y="197" text-anchor="middle" fill="var(--tag-ink)">Cognito</text>
+              <text x="280" y="212" text-anchor="middle" fill="var(--muted)" font-size="9.5">SRP · JWT</text>
+
+              <rect x="215" y="98" width="130" height="50" rx="10" fill="var(--pastel-peach)" stroke="var(--line)"></rect>
+              <text x="280" y="119" text-anchor="middle" fill="var(--tag-ink)">API Gateway</text>
+              <text x="280" y="135" text-anchor="middle" fill="var(--muted)" font-size="9.5">HTTP API · proxy</text>
+
+              <rect x="410" y="98" width="150" height="50" rx="10" fill="var(--pastel-blue)" stroke="var(--line)"></rect>
+              <text x="485" y="119" text-anchor="middle" fill="var(--tag-ink)">Lambda</text>
+              <text x="485" y="135" text-anchor="middle" fill="var(--muted)" font-size="9.5">.NET 10 · ARM64 · one fn</text>
+
+              <rect x="605" y="98" width="95" height="50" rx="10" fill="var(--pastel-lav)" stroke="var(--line)"></rect>
+              <text x="652" y="119" text-anchor="middle" fill="var(--tag-ink)">DynamoDB</text>
+              <text x="652" y="135" text-anchor="middle" fill="var(--muted)" font-size="9.5">one table</text>
+
+              <g stroke="var(--faint)" fill="none" marker-end="url(#ar)">
+                <path d="M 120 96 L 213 66"></path>
+                <path d="M 120 150 L 213 180"></path>
+                <path d="M 152 123 L 211 123"></path>
+                <path d="M 347 123 L 406 123"></path>
+                <path d="M 562 123 L 601 123"></path>
+                <path d="M 288 174 L 288 152"></path>
+              </g>
+              <g fill="var(--muted)" font-size="9">
+                <text x="150" y="76">load app</text>
+                <text x="140" y="176">sign in</text>
+                <text x="163" y="116">bearer JWT</text>
+                <text x="300" y="167">authorizer</text>
+              </g>
+              <text x="360" y="242" text-anchor="middle" fill="var(--faint)" font-size="9.5">No VPC anywhere — a NAT gateway alone would cost more than the entire budget.</text>
+            </g>
+          </svg>
+          <figcaption>One AWS account holds three copies of this, named <code>litmus-dev-*</code>, <code>litmus-qa-*</code> and <code>litmus-prod-*</code>, sharing one Route 53 zone as subdomains.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <p class="mark">02</p>
+      <div class="stack-lg">
+        <h2>What we deliberately did not build</h2>
+        <p class="sub">Six months from now the useful question is not what is here — the code will tell you that — but why the obvious thing is missing. These are the four that will look like omissions.</p>
+
+        <div>
+          <div class="cut">
+            <p class="verdict">Cut · reopen only with evidence</p>
+            <h3>Offline editing, and with it the whole local-first layer</h3>
+            <p>The PRD asked for offline read and edit, a queue draining on reconnect, and per-field last-write-wins. That is a sync-engine requirement, and it was the most expensive thing in the document by a wide margin. Zero 1.0, Livestore and ElectricSQL were all live candidates and all rejected: for one human editing two devices, per-field conflict resolution resolves essentially no conflicts. The server is authoritative, the UI is optimistic, and the network failing produces an honest error. If offline comes back it is a data-layer replacement, not an increment.</p>
+          </div>
+          <div class="cut">
+            <p class="verdict">Cut · seam reserved</p>
+            <h3>Real-time push between devices</h3>
+            <p>A change on the desktop does not appear on an open phone within seconds; it appears the moment you pick the phone up. Refetch-on-focus and refetch-on-reconnect cost nothing and cover the case that actually happens. AD-13's single invalidation door is where server-sent events go if the rare case starts to matter.</p>
+          </div>
+          <div class="cut">
+            <p class="verdict">Evaluated · rejected on coherence</p>
+            <h3>Vercel for the frontend</h3>
+            <p>It was a tie on money. A custom domain costs nothing on AWS either — ACM certificates are free, CloudFront alternate domain names are free, and Route 53's $0.50 hosted zone is optional. Vercel's real advantage was effort and preview deploys, which did not outweigh splitting the system across two infrastructure-as-code surfaces when CDK was chosen precisely to avoid that.</p>
+          </div>
+          <div class="cut">
+            <p class="verdict">Rejected · design wins</p>
+            <h3>Cognito Hosted UI</h3>
+            <p>Cheapest and most secure by default, and it cannot render the three designed auth frames — a two-pane layout whose brand panel is built from the product's own Task Card. Custom screens call Cognito's SRP flow directly instead. The cost is recorded honestly in AD-21: the refresh token lives in browser storage, so the PRD's "not readable by page scripts" is only partly met.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <p class="mark">03</p>
+      <div class="stack-lg">
+        <h2>The 27 rules</h2>
+        <p class="sub">Each one exists because two people building different parts of Litmus would otherwise answer the same question differently. Grouped by what they protect.</p>
+
+        <!-- DOMAIN -->
+        <div>
+          <div class="group-head">
+            <span class="tag g-domain"><span class="dot"></span>Domain</span>
+            <span class="count">AD-1 – AD-5, AD-22 · six rules</span>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-1</span> &nbsp;The core owns Task and Project; features are projections</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Week Board and Project Board each growing their own Task model, status transitions and date handling.</dd>
+              <dt>Rule</dt><dd>Entities and their derived functions are declared in <code>core/domain</code> and <code>Litmus.Core.Domain</code>. A feature may define view models over them; it may not redefine, extend or shadow them, or implement a transition the core does not expose.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-2</span> &nbsp;Feature modules never depend on one another</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A cycle that makes either surface impossible to change or delete alone.</dd>
+              <dt>Rule</dt><dd>Dependencies flow shell → feature → core only, enforced by Nx tags and one-way .NET project references. A feature needing something from another feature means the thing belongs in the core.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-3</span> &nbsp;Derived values are computed at read time and never persisted</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A stored counter drifting because one mutation path forgot to update it — after which Progress is wrong permanently, silently, and differently on three screens.</dd>
+              <dt>Rule</dt><dd>No aggregate is ever written. Progress, counts and "due this week" are pure functions over the task set in hand. A project's freshness is <code>max(project.updatedAt, max(task.updatedAt))</code>, not a field a child write must remember to bump. <strong>Tripwire:</strong> revisit past ~2,000 tasks.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-4</span> &nbsp;Due Date is a calendar day, not an instant</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A task landing on the wrong day column for anyone not on UTC.</dd>
+              <dt>Rule</dt><dd><code>dueDate</code> is a <code>YYYY-MM-DD</code> string, never parsed into a Date. Week membership is string comparison. Time ranges are local <code>HH:mm</code> pairs scoped to that day. Audit timestamps are separately UTC instants and are never used for scheduling.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-5</span> &nbsp;Status and Category have exactly one definition</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A fourth status value, a hidden one, or a category list that differs by surface.</dd>
+              <dt>Rule</dt><dd><code>ToDo | InProgress | Done</code>, closed, defined in C# and generated into TypeScript. Category is single-valued from a fixed v1 list — Design, Dev, QA, Docs — with no management surface.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-22</span> &nbsp;Task order is deterministic and derived</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Each surface sorting differently — or one persisting a <code>sortOrder</code> the other neither writes nor respects.</dd>
+              <dt>Rule</dt><dd>One comparator in <code>core/domain</code>: time range, then priority, then title. No user ordering and no stored order in v1. Adding manual reordering is a datastore change and an amendment here, not a local decision.</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- DATA -->
+        <div>
+          <div class="group-head">
+            <span class="tag g-data"><span class="dot"></span>Data</span>
+            <span class="count">AD-6 – AD-8, AD-25, AD-26 · five rules</span>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-6</span> &nbsp;One partition per user; the user id comes only from the token</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A query that forgets to scope by user, and any endpoint that lets a caller name whose data it wants.</dd>
+              <dt>Rule</dt><dd>Single table, partition key <code>USER#{sub}</code>. The <code>sub</code> is read only from the JWT authorizer's claims — never from a body, path or query, in any endpoint, ever. Persistence helpers take it as their first argument so an unscoped query will not compile.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-7</span> &nbsp;Subtasks are embedded in their Task</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Two modules disagreeing about whether a subtask is an item or a field, and a pair that reads half-updated.</dd>
+              <dt>Rule</dt><dd>An ordered list attribute on the task item, written and read in one operation. Never separate items, never separately addressable, no due date.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-8</span> &nbsp;The client generates entity ids</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Temporary-id reconciliation in optimistic inserts, and a retried create producing two records.</dd>
+              <dt>Rule</dt><dd>UUIDv7, minted before the request, used in the optimistic cache entry from birth. The server validates the format and rejects a duplicate, making creates idempotent under retry.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-25</span> &nbsp;Deleting a Project takes its Tasks with it</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Orphaned tasks whose <code>projectId</code> resolves to nothing, rendered differently by every surface.</dd>
+              <dt>Rule</dt><dd><code>projectId</code> never dangles. Deletion cascades in chunked writes within the user's partition, and the confirmation names the count. A task with <em>no</em> project is valid — that is a Week Board task. A task pointing at a project that does not exist is not.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-26</span> &nbsp;Every stored item declares its type and schema version</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Three modules each inferring an item's kind from its sort-key prefix slightly differently, and a v2 migration with nothing to migrate against.</dd>
+              <dt>Rule</dt><dd><code>type</code> and <code>schemaVersion</code> as ordinary attributes. Readers branch on <code>type</code>, never on key parsing. Shape changes increment the version and ship with a reader tolerating both, so no deploy needs a migration window.</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- CONTRACT -->
+        <div>
+          <div class="group-head">
+            <span class="tag g-contract"><span class="dot"></span>Contract</span>
+            <span class="count">AD-9 – AD-12 · four rules</span>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-9</span> &nbsp;One Lambda, one Minimal API host, one module per route group</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Function-per-route sprawl, and per-module divergence in middleware, auth, serialization and errors.</dd>
+              <dt>Rule</dt><dd>A single .NET 10 Lambda runs ASP.NET Core Minimal APIs behind an HTTP API proxy route. Each module exposes exactly one <code>MapXxxEndpoints</code> extension. Cross-cutting concerns are configured once in the host. The same host runs under Kestrel locally, so the full API is testable without deploying.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-10</span> &nbsp;The wire contract is generated, never written twice</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A hand-maintained TypeScript mirror of a C# DTO going quietly stale — the classic split-stack drift.</dd>
+              <dt>Rule</dt><dd>The backend emits OpenAPI at build time; TypeScript types are generated from it, committed, and never hand-edited. A hand-written interface duplicating a server type is a defect.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-11</span> &nbsp;One error shape</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Each module inventing its own envelope, forcing per-surface error handling.</dd>
+              <dt>Rule</dt><dd>RFC 9457 Problem Details everywhere, which ASP.NET Core produces natively. The client maps them in <code>core/api</code> alone; features consume a normalized error and never parse responses.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-12</span> &nbsp;The read model is a workspace bootstrap plus lazy detail</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Each surface fetching its own slice, ending up with two cached copies of one task that can disagree on screen.</dd>
+              <dt>Rule</dt><dd><code>GET /workspace</code> returns every project and a lean task index; both boards are selectors over that one response and search is a client-side filter. Descriptions and subtask bodies load on demand. No feature issues a list query of its own.</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- CLIENT -->
+        <div>
+          <div class="group-head">
+            <span class="tag g-client"><span class="dot"></span>Client state</span>
+            <span class="count">AD-13, AD-14, AD-21, AD-23, AD-24 · five rules</span>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-13</span> &nbsp;One query-key factory, one cache entry, one invalidation door</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Two modules keying the same data differently, so one updates and the other shows stale content.</dd>
+              <dt>Rule</dt><dd>All keys come from a single factory. The workspace index is one entry. Every invalidation passes through one exported function — which is also where real-time push is added later without touching feature code.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-14</span> &nbsp;Every mutation is optimistic and goes through the core</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A drag feeling instant while the identical change from a dropdown blocks on the network.</dd>
+              <dt>Rule</dt><dd>Named operations in <code>core/api</code> — <code>setStatus</code>, <code>setDueDate</code>, <code>toggleSubtask</code> — each owning its patch and rollback. Features call these and never the HTTP client, and never write their own optimistic logic.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-21</span> &nbsp;Tokens live in memory; the refresh token is the only persisted credential</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Each surface inventing its own token storage and refresh timing, and access tokens sitting in <code>localStorage</code> for any script to read.</dd>
+              <dt>Rule</dt><dd>Custom screens call Cognito SRP directly. Access and ID tokens stay in memory; refresh runs through one interceptor. <strong>Accepted deviation:</strong> the refresh token remains in browser storage, so the PRD's "not readable by page scripts" is only partly met. The cookie-BFF alternative was judged disproportionate for one user.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-23</span> &nbsp;One mutation per entity at a time; a stale response never wins</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A fast user silently losing an edit when a status change and a date change race.</dd>
+              <dt>Rule</dt><dd>Mutations for one entity serialize. Endpoints return the complete updated entity, applied only when no later mutation for that id is pending — otherwise discarded, optimistic state standing until the queue drains. Failure rolls back and raises one kind of notice through the shell.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-24</span> &nbsp;Preferences live on the Account; view state lives in the URL</h3>
+            <dl>
+              <dt>Prevents</dt><dd>One surface persisting to <code>localStorage</code> and another to the Account, so the phone agrees about the theme and disagrees about everything else.</dd>
+              <dt>Rule</dt><dd>Anything the PRD says <em>persists</em> is on the Account and syncs. Anything describing what you are currently looking at is a typed URL search param. Browser storage holds exactly one thing — the refresh token.</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- SURFACE -->
+        <div>
+          <div class="group-head">
+            <span class="tag g-surface"><span class="dot"></span>Surface</span>
+            <span class="count">AD-15, AD-16, AD-20, AD-27 · four rules</span>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-15</span> &nbsp;Colour exists only as a token reference</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Hard-coded hex a theme switch cannot reach, leaving dark mode broken in whichever surface was built last.</dd>
+              <dt>Rule</dt><dd>The 21 tokens are custom properties on <code>:root</code> and <code>[data-theme="dark"]</code>; CSS Modules reference <code>var(--token)</code> only, lint-enforced. A project's colour is stored as a <em>token name</em>, never a hex — the pastels are the one family whose dark values are tints, not inversions. Contrast is verified by an automated test, not by review.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-16</span> &nbsp;Every drag has a non-drag equivalent</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A status change reachable only by pointer, unusable by keyboard and awkward on touch.</dd>
+              <dt>Rule</dt><dd>Drag is an accelerator, never the only path. Anything moving a task between statuses or days is also reachable through a control calling the same core operation. New draggable surfaces inherit this.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-20</span> &nbsp;The browser calls nothing but its own origin and AWS</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A font link or analytics snippet added on one surface quietly making the product phone home.</dd>
+              <dt>Rule</dt><dd>Inter and Phosphor Icons are self-hosted — a Google Fonts link would violate the privacy NFR on every screen. No analytics, telemetry, error-reporting SaaS or embeds. Outbound origins are CloudFront, API Gateway and Cognito.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-27</span> &nbsp;One breakpoint scale, mobile-first, no horizontal scroll</h3>
+            <dl>
+              <dt>Prevents</dt><dd>Each epic inventing its own breakpoints, so three surfaces switch to mobile at three different widths.</dd>
+              <dt>Rule</dt><dd>One scale declared in <code>core/ui</code>; no raw pixel media query in a feature. Authored mobile-first from 390 px. The three designed mobile frames are exact targets; surfaces without one take the shared fallback. Overflow is handled inside the element that owns it.</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- OPS -->
+        <div>
+          <div class="group-head">
+            <span class="tag g-ops"><span class="dot"></span>Operations</span>
+            <span class="count">AD-17 – AD-19 · three rules</span>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-17</span> &nbsp;The near-zero cost envelope</h3>
+            <dl>
+              <dt>Prevents</dt><dd>One infrastructure choice quietly turning a free personal app into a monthly bill — and each environment making that choice differently.</dd>
+              <dt>Rule</dt><dd>See the table below. These are hard prohibitions in all three environments, not guidance.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-18</span> &nbsp;Environments are CDK stages; no environment identity in application code</h3>
+            <dl>
+              <dt>Prevents</dt><dd><code>if (env === "prod")</code> branches, and staging behaving differently for reasons nobody can find.</dd>
+              <dt>Rule</dt><dd>One account, three stages, resources named <code>litmus-{env}-*</code>. Code reads configuration from environment variables and never names an environment. Production stacks carry termination protection. The same artifact shape is built everywhere; only configuration differs.</dd>
+            </dl>
+          </div>
+          <div class="clause">
+            <h3><span class="m">AD-19</span> &nbsp;Branch-to-environment is the only promotion path</h3>
+            <dl>
+              <dt>Prevents</dt><dd>A local <code>cdk deploy</code> reaching staging or production, and environments nobody can trace to a commit.</dd>
+              <dt>Rule</dt><dd><code>develop</code> → dev, <code>qa</code> → staging, <code>main</code> → production; a merge is the only trigger. GitHub Actions assumes an AWS role via OIDC — no long-lived keys exist anywhere. Path filters build frontend, backend and infra independently.</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <p class="mark">04</p>
+      <div class="stack-lg">
+        <h2>Why this costs nothing</h2>
+        <p class="sub">Every figure below was verified against AWS pricing on 19 August 2026. Three of these are traps that look free and are not.</p>
+        <div class="panel tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Service</th><th>What we do</th><th>Why it is free</th><th>Monthly</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Lambda</td><td>One .NET 10 ARM64 function</td><td>1M requests + 400k GB-s, always free, no expiry</td><td class="num">$0.00</td></tr>
+              <tr><td>CloudFront + S3</td><td>SPA delivery</td><td>1 TB egress + 10M requests, always free, no expiry</td><td class="num">$0.00</td></tr>
+              <tr><td>Cognito</td><td>Essentials tier, 1 user</td><td>10,000 MAU free indefinitely — <strong>Plus tier has none</strong></td><td class="num">$0.00</td></tr>
+              <tr><td>DynamoDB</td><td>On-demand, one table</td><td>25 GB storage free. <strong>On-demand requests are billed from the first one</strong> — the free 25 WCU/RCU is provisioned mode only, and account-wide</td><td class="num">~$0.01</td></tr>
+              <tr><td>API Gateway</td><td>HTTP API, not REST</td><td><strong>1M/month is free for 12 months only.</strong> After that HTTP is $1.00/M; REST would be $3.50/M</td><td class="num">~$0.01</td></tr>
+              <tr><td>Route 53</td><td>One zone, three subdomains</td><td>Not free, and not required — but it lets CDK auto-validate certificates</td><td class="num">$0.50</td></tr>
+              <tr><td>ACM</td><td>One wildcard certificate</td><td>Public certificates and renewals are free</td><td class="num">$0.00</td></tr>
+              <tr><td>CloudWatch</td><td>Structured logs, retention set</td><td>5 GB ingest free — <strong>default retention never expires</strong>, so it is set explicitly</td><td class="num">$0.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel stack">
+          <p class="eyebrow">The two that would break it</p>
+          <p><strong>A VPC.</strong> Put the Lambda in one and you need a NAT gateway at roughly $32/month — more than everything above combined, several times over. DynamoDB, Cognito and S3 are all reachable over public AWS endpoints with IAM, so there is no reason to.</p>
+          <p><strong>SnapStart.</strong> It is free for Java managed runtimes only. For .NET it bills for snapshot caching from a three-hour minimum then per millisecond, accruing around the clock per published version, times three environments. Not enabled — the cold start is accepted instead.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <p class="mark">05</p>
+      <div class="stack-lg">
+        <h2>The stack, and two refusals</h2>
+        <p class="sub">Pinned from live npm and NuGet registries on 19 August 2026. Two entries are deliberately not the newest release.</p>
+        <div class="panel tbl-wrap">
+          <table>
+            <thead><tr><th>Frontend</th><th class="num">Version</th><th>Backend &amp; infra</th><th class="num">Version</th></tr></thead>
+            <tbody>
+              <tr><td>React</td><td class="num">19.2.8</td><td>.NET</td><td class="num">10 LTS</td></tr>
+              <tr><td>TypeScript</td><td class="num">6.0.3</td><td>Lambda.AspNetCoreServer.Hosting</td><td class="num">2.2.1</td></tr>
+              <tr><td>Vite</td><td class="num">8.2.1</td><td>AWSSDK.DynamoDBv2</td><td class="num">4.0.103.3</td></tr>
+              <tr><td>Nx <span class="sub-sm">(TypeScript only)</span></td><td class="num">23.1.1</td><td>aws-cdk-lib</td><td class="num">2.265.0</td></tr>
+              <tr><td>TanStack Query</td><td class="num">5.101.4</td><td>Node <span class="sub-sm">(toolchain)</span></td><td class="num">22.x LTS</td></tr>
+              <tr><td>TanStack Router</td><td class="num">1.170.30</td><td>API Gateway</td><td class="num">HTTP API</td></tr>
+              <tr><td>@dnd-kit/core</td><td class="num">6.3.1</td><td>Cognito</td><td class="num">Essentials</td></tr>
+              <tr><td>ESLint</td><td class="num">10.8.1</td><td>DynamoDB</td><td class="num">on-demand</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel stack">
+          <p class="eyebrow">Refusal one · TypeScript 6.0.3, not 7.0.2</p>
+          <p>TypeScript 7's Go-native compiler went GA on 8 July 2026 and is eight to twelve times faster. It is still the wrong pin today: typescript-eslint closed its TS7 support request as <em>not planned</em>, and ESLint core is blocked behind it. AD-2 and AD-15 are both enforced by ESLint rules — adopting TS7 now would switch off the checks this architecture depends on. Revisit when 7.1 lands the stable API; adopt <code>tsgo</code> as a sidecar type-checker first.</p>
+          <hr class="rule-off">
+          <p class="eyebrow">Refusal two · .NET 10, not .NET 11</p>
+          <p>.NET 10 is LTS with support through November 2028 and has been a Lambda managed runtime since 8 January 2026. .NET 11 is Standard Term Support — two years — still in preview, and does not ship until November 2026.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <p class="mark">06</p>
+      <div class="stack-lg">
+        <h2>Still open</h2>
+        <p class="sub">Nothing here blocks building. Each is either a product question the PRD has not answered, or a deferral with a stated condition for revisiting.</p>
+        <div class="panel">
+          <ul class="plain">
+            <li><strong>Notes, and S3 markdown storage.</strong> The whole v2 surface. AD-1 and AD-2 already reserve its shape as a peer projection, so adding it should disturb nothing.</li>
+            <li><strong>Read scaling.</strong> AD-12 assumes the working set fits one response, which holds at the PRD's fixture scale of 6 projects and 85 tasks. Past roughly 2,000 tasks the answer is a <code>dueDate</code> index and per-surface queries.</li>
+            <li><strong>Server-side task search.</strong> A client filter for now. Doing it properly means a scan or OpenSearch, which the cost envelope forbids.</li>
+            <li><strong>Registration closure.</strong> Cognito can disable self-signup or restrict to admin creation. Undecided because the PRD has not decided.</li>
+            <li><strong>Social sign-in.</strong> Google and Apple as Cognito identity providers, both resolving to one pool. Not designed in until the PRD confirms it is real.</li>
+            <li><strong>Observability.</strong> Structured logs only. No tracing, dashboards or alerting — they cost money and there is no one to page.</li>
+            <li><strong>Auth screens in dark theme.</strong> A design gap, not an architecture one. AD-15 means the tokens are already in place whenever the frames get drawn.</li>
+            <li><strong>Data export.</strong> AD-12's bootstrap already returns the entire dataset in one call, so export is close to free whenever it is wanted.</li>
+          </ul>
+        </div>
+        <p class="sub-sm">Two decisions here override the PRD and need to be reflected back into it: offline editing is cut (FR-8 and the offline-tolerance NFR), and the session-token NFR is only partly met (AD-21).</p>
+      </div>
+    </div>
+  </section>
+
+</div>
