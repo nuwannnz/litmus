@@ -11,6 +11,7 @@
     "dev": "nx serve @litmus/web",
     "build": "nx build @litmus/web",
     "preview": "nx preview @litmus/web",
+    "test": "nx run-many -t test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "nx run-many -t lint",
     "lint:fix": "nx run-many -t lint --args=--fix",
@@ -36,7 +37,8 @@
     "prettier": "^3.9.6",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.67.0",
-    "vite": "^7.0.6"
+    "vite": "^7.0.6",
+    "vitest": "^3.0.0"
   },
   "dependencies": {
     "react": "^19.1.1",

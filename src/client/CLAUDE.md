@@ -23,6 +23,46 @@ commands or assume a framework is present — if one gets added, this file
 should be updated with the real invocations. (`docs/architecture.md` §7 plans
 Vitest, pgTAP and Playwright; none of it exists yet.)
 
+## The local backend
+
+`supabase/` at the **repo root** holds the local stack, and `config.toml` is committed — so a
+fresh clone gets an identical Postgres and auth from one command. A Docker daemon (Docker
+Desktop, OrbStack, Colima) has to be running first.
+
+```bash
+# from the repo root, not src/client/
+supabase start      # pulls images on the first run, then boots Postgres + auth + Studio
+supabase status     # prints the URLs and the local keys
+supabase stop       # stops the containers; add --no-backup to also drop the local data
+```
+
+Install the CLI with `brew install supabase/tap/supabase`, or prefix each command with
+`npx supabase@latest` for a one-off. It is deliberately not an npm dependency of this
+workspace — it is a repo-level tool, not a client one. Ports come from `config.toml`:
+
+|                          | URL                                                       |
+| ------------------------ | --------------------------------------------------------- |
+| API — PostgREST and auth | `http://127.0.0.1:54321`                                  |
+| Postgres                 | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Studio                   | `http://127.0.0.1:54323`                                  |
+| Local inbox — auth mail  | `http://127.0.0.1:54324`                                  |
+
+`supabase status` prints the local `anon` key; it and the API URL are what `VITE_SUPABASE_URL`
+and `VITE_SUPABASE_ANON_KEY` point at locally (`docs/architecture.md` §6.2). The anon key is
+public by design — RLS is the whole security model (§2.2).
+
+Email and password sign-in works out of the box, with confirmations off locally, so mail that
+would otherwise have been sent — including the FR-6 reset link — is readable in the local
+inbox above. Google and Apple sign-in are left disabled rather than half-configured: FR-7 is
+still an open decision (PRD §10 Q1).
+
+Three things the config turns off on purpose — **Storage** (a v2 concern, §3.3), **Edge
+Functions** (none in v1, §4.4, so `supabase/functions/` stays empty), and the
+**analytics/Logflare** container (nothing depends on it and it is the slowest to boot).
+
+There is no schema yet. `supabase/migrations/` and `seed.sql` arrive with the rest of EP-2;
+until then `supabase start` gives you an empty database behind a working auth service.
+
 ## Architecture
 
 Nx monorepo, one shipped app today:
