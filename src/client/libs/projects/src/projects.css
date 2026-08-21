@@ -1,0 +1,209 @@
+/* ==========================================================================
+   Litmus — Projects dashboard and Project Detail
+   ========================================================================== */
+
+.projects-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 22px;
+  padding: 0 32px 32px;
+  overflow-y: auto;
+  align-content: start;
+  flex: 1;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--base) var(--ease), transform var(--base) var(--ease);
+}
+
+.project-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+.project-head { display: flex; align-items: center; gap: 14px; }
+.project-head-text { flex: 1; text-align: left; }
+
+.project-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: var(--c-soft);
+  color: var(--c-solid);
+}
+
+.project-icon .icon { stroke-width: 1.8; }
+.project-name { display: block; font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+.project-count { font-size: 11.5px; color: var(--text-secondary); }
+
+.project-desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  min-height: 39px;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.progress-row b { color: var(--text-primary); font-size: 12px; }
+
+.project-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+/* -------------------------------------------------------------- list view */
+.table-wrap { flex: 1; overflow: auto; padding: 0 32px 32px; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.table th {
+  padding: 13px 18px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--border);
+}
+
+.table td { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.table tr:last-child td { border-bottom: 0; }
+.table tbody tr { cursor: pointer; }
+.table tbody tr:hover { background: var(--surface-sunken); }
+.table .cell-name { display: flex; align-items: center; gap: 12px; }
+.table .cell-name b { font-weight: 600; }
+.table .cell-name small { display: block; color: var(--text-muted); font-size: 11px; }
+.table .cell-name .dot { width: 10px; height: 10px; }
+.table .progress { width: 110px; }
+
+/* --------------------------------------------------------- project detail */
+.detail {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 26px;
+  flex: 1;
+  min-height: 0;
+  padding: 0 32px 32px;
+  overflow: hidden;
+}
+
+.detail-main { overflow-y: auto; padding-right: 4px; }
+.detail-side { overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+.detail-main .project-desc { min-height: 0; font-size: 13px; }
+
+.stat-row { display: flex; gap: 26px; margin: 18px 0 22px; }
+.stat b { display: block; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.stat span { font-size: 11.5px; color: var(--text-secondary); }
+
+.group { margin-bottom: 24px; }
+
+.ptask {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 8px;
+  font-size: 13px;
+  transition: box-shadow var(--fast) var(--ease);
+}
+
+.ptask:hover { box-shadow: var(--shadow-sm); }
+.ptask .t { flex: 1; font-weight: 550; }
+.ptask.is-done .t { color: var(--text-secondary); text-decoration: line-through; }
+
+.side-card {
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.side-card > .label--caps { display: block; margin-bottom: 10px; }
+.side-card p { font-size: 12.5px; line-height: 1.6; color: var(--text-secondary); }
+
+.kv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 12.5px;
+}
+
+.kv .k { color: var(--text-secondary); }
+.kv .v { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+.member { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+.member .n { display: block; font-size: 12.5px; font-weight: 600; }
+.member .r { font-size: 11px; color: var(--text-muted); }
+
+/* -------------------------------------------------------- project kanban */
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.kanban-col {
+  background: var(--surface-sunken);
+  border-radius: var(--r-lg);
+  padding: 12px;
+  min-height: 120px;
+  transition: box-shadow var(--fast) var(--ease);
+}
+
+[data-theme="dark"] .kanban-col { background: rgba(255, 255, 255, 0.02); }
+.kanban-col.is-over { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.kanban-col .group-head { padding: 0 4px; }
+.kanban-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* ---------------------------------------------------- new project modal -- */
+.modal-task { margin-bottom: 6px; }
+.modal-task .subtask-del { opacity: 1; }
+.modal .input--compact { padding: 9px 12px; }
+
+/* ================================================================ MOBILE == */
+@media (max-width: 860px) {
+  .project-grid, .table-wrap { padding: 0 20px 24px; }
+  .detail { grid-template-columns: 1fr; overflow-y: auto; padding: 0 20px 24px; }
+  .detail-main, .detail-side { overflow: visible; }
+  .kanban { grid-template-columns: 1fr; }
+}

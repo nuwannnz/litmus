@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "allowJs": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@litmus/ui": ["libs/ui/src/index.ts"],
+      "@litmus/ui/styles.css": ["libs/ui/src/styles/index.css"],
+      "@litmus/domain": ["libs/domain/src/index.ts"],
+      "@litmus/core": ["libs/core/src/index.ts"],
+      "@litmus/week": ["libs/week/src/index.ts"],
+      "@litmus/projects": ["libs/projects/src/index.ts"],
+      "@litmus/notes": ["libs/notes/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

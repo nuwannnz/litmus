@@ -1,0 +1,14 @@
+{
+  "name": "@litmus/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@litmus/core": "0.0.1",
+    "@litmus/domain": "0.0.1",
+    "@litmus/notes": "0.0.1",
+    "@litmus/projects": "0.0.1",
+    "@litmus/ui": "0.0.1",
+    "@litmus/week": "0.0.1"
+  }
+}

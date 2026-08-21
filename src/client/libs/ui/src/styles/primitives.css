@@ -1,0 +1,286 @@
+/* ==========================================================================
+   Litmus — shared layout primitives
+   The page frame, the task card, and the small compound pieces that more than
+   one feature module needs. Module-specific layout lives with the module.
+   ========================================================================== */
+
+/* --------------------------------------------------------------- the view */
+.view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 32px 18px;
+  flex-shrink: 0;
+}
+
+.topbar h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.topbar .sub {
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.topbar-lead { min-width: 0; }
+.topbar-tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.topbar-tools .search { width: 220px; }
+
+/* ------------------------------------------------------------- prev / next */
+.stepper {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 36px;
+  color: var(--text-secondary);
+}
+
+.stepper button:hover { background: var(--surface-sunken); color: var(--text-primary); }
+.stepper button + button { border-left: 1px solid var(--border); }
+
+/* ------------------------------------------------------------- count pill */
+.count-pill {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .count-pill { background: var(--border); }
+
+/* -------------------------------------------------------------- task card */
+.task {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px 13px;
+  text-align: left;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+  cursor: grab;
+  transition: box-shadow var(--fast) var(--ease), transform var(--fast) var(--ease),
+    opacity var(--fast) var(--ease);
+}
+
+.task:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.task:active { cursor: grabbing; }
+.task.is-dragging { opacity: 0.4; }
+
+.task.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.task.is-done .task-title { color: var(--text-secondary); text-decoration: line-through; }
+
+.task-top { display: flex; align-items: flex-start; gap: 8px; }
+
+.task-title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+
+.task-project {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.task-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.task-meta span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+
+/* ------------------------------------------------------------ breadcrumbs */
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.crumbs b { color: var(--text-primary); font-weight: 600; }
+.crumbs button:hover { color: var(--accent); }
+
+/* ------------------------------------------------------------ group heads */
+.group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+/* ------------------------------------------------------------ linked note */
+.linked-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  text-align: left;
+  transition: background var(--fast) var(--ease);
+}
+
+.linked-note:hover { background: var(--surface-sunken); }
+.linked-note .t { display: block; font-size: 12.5px; font-weight: 600; }
+.linked-note .s { font-size: 11px; color: var(--text-muted); }
+
+/* ------------------------------------------------------------------- hint */
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-bottom: 22px;
+}
+
+/* ---------------------------------------------------------- dashed action */
+.dashed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  height: 38px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.dashed:hover { background: var(--accent-soft); }
+
+/* --------------------------------------------------------------- pickers */
+.color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-solid);
+  display: grid;
+  place-items: center;
+}
+
+.color-swatch[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--c-solid);
+}
+
+.color-swatch .icon { color: #fff; stroke-width: 3; }
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width: 860px) {
+  .topbar { padding: 18px 20px 12px; flex-wrap: wrap; }
+  .topbar h1 { font-size: 21px; }
+  .topbar-tools { width: 100%; order: 3; }
+  .topbar-tools .search { flex: 1; width: auto; }
+}
+
+/* ---------------------------------------------------------- command list
+   Shared by the command palette and the "link a note" picker. */
+.palette-input {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.palette-input input { flex: 1; border: 0; background: none; font-size: 15px; outline: none; }
+.palette-list { max-height: 340px; overflow-y: auto; padding: 8px; }
+
+.palette-group {
+  padding: 10px 10px 5px;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.palette-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 9px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.palette-item .icon { color: var(--text-secondary); }
+.palette-item .s { margin-left: auto; font-size: 11.5px; color: var(--text-muted); }
+.palette-item:hover { background: var(--surface-sunken); }
+.palette-item.is-active { background: var(--accent-soft); color: var(--accent); }
+.palette-item.is-active .icon { color: var(--accent); }
+
+.palette-foot {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-sunken);
+  font-size: 11px;
+  color: var(--text-secondary);
+}

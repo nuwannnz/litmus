@@ -1,0 +1,111 @@
+/* ==========================================================================
+   Litmus — design tokens
+   Every value here comes from docs/ui-design.pen. Light is the default;
+   [data-theme="dark"] on <html> swaps the surface + text ramps.
+   ========================================================================== */
+
+:root {
+  /* --- Surfaces ------------------------------------------------------- */
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface-sunken: #f7f6f3;
+  --sidebar: #ffffff;
+  --overlay: rgba(26, 26, 36, 0.25);
+
+  /* --- Text ----------------------------------------------------------- */
+  --text-primary: #3a3a46;
+  --text-secondary: #9b9ba8;
+  --text-muted: #bebecb;
+  --text-on-accent: #ffffff;
+
+  /* --- Lines ---------------------------------------------------------- */
+  --border: #efede9;
+  --border-strong: #e4e1dc;
+
+  /* --- Brand ---------------------------------------------------------- */
+  --accent: #4a72e0;
+  --accent-hover: #3d63cd;
+  --accent-mid: #6e8cea;
+  --accent-light: #93adf4;
+  --accent-soft: #e5eafb;
+
+  /* --- Pastel fills (project + category chips) ------------------------ */
+  --pastel-lav: #e5eafb;
+  --pastel-mint: #d6efe4;
+  --pastel-peach: #fbe0d2;
+  --pastel-blue: #d8e8f7;
+  --pastel-yellow: #fbefc9;
+  --pastel-pink: #fad8e4;
+
+  /* --- Saturated dots / progress bars --------------------------------- */
+  --dot-lav: #6c8ae8;
+  --dot-mint: #8ed3b5;
+  --dot-peach: #f3b18c;
+  --dot-blue: #93bee8;
+  --dot-yellow: #ebcb72;
+  --dot-pink: #ee9cbe;
+
+  /* --- Elevation ------------------------------------------------------ */
+  --shadow-xs: 0 1px 2px rgba(42, 42, 53, 0.04);
+  --shadow-sm: 0 1px 3px rgba(42, 42, 53, 0.05), 0 1px 2px rgba(42, 42, 53, 0.03);
+  --shadow-md: 0 6px 20px rgba(26, 26, 36, 0.08);
+  --shadow-lg: 0 16px 36px rgba(26, 42, 85, 0.14);
+  --shadow-drag: 0 12px 28px rgba(26, 26, 36, 0.18);
+
+  /* --- Geometry ------------------------------------------------------- */
+  --r-sm: 8px;
+  --r-md: 11px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --r-pill: 999px;
+  --rail-w: 84px;
+  --panel-w: 468px;
+
+  /* --- Type ----------------------------------------------------------- */
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  /* --- Motion --------------------------------------------------------- */
+  --ease: cubic-bezier(0.32, 0.72, 0.3, 1);
+  --fast: 120ms;
+  --base: 200ms;
+}
+
+[data-theme="dark"] {
+  --bg: #15151b;
+  --surface: #1f1f28;
+  --surface-sunken: #1a1a21;
+  --sidebar: #1a1a21;
+  --overlay: rgba(0, 0, 0, 0.55);
+
+  --text-primary: #ececf2;
+  --text-secondary: #8b8b99;
+  --text-muted: #565662;
+
+  --border: #2b2b35;
+  --border-strong: #35353f;
+
+  --accent-soft: #232d48;
+
+  --pastel-lav: #232d48;
+  --pastel-mint: #22352c;
+  --pastel-peach: #3b2e26;
+  --pastel-blue: #233240;
+  --pastel-yellow: #393324;
+  --pastel-pink: #3b2831;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.5);
+  --shadow-drag: 0 12px 28px rgba(0, 0, 0, 0.55);
+}
+
+/* Accent colour families, addressed by name from markup:
+   <span class="dot" data-color="mint"> etc. */
+[data-color="lav"]    { --c-soft: var(--pastel-lav);    --c-solid: var(--dot-lav); }
+[data-color="mint"]   { --c-soft: var(--pastel-mint);   --c-solid: var(--dot-mint); }
+[data-color="peach"]  { --c-soft: var(--pastel-peach);  --c-solid: var(--dot-peach); }
+[data-color="blue"]   { --c-soft: var(--pastel-blue);   --c-solid: var(--dot-blue); }
+[data-color="yellow"] { --c-soft: var(--pastel-yellow); --c-solid: var(--dot-yellow); }
+[data-color="pink"]   { --c-soft: var(--pastel-pink);   --c-solid: var(--dot-pink); }

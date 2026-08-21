@@ -1,0 +1,31 @@
+{
+  "name": "@litmus/client",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "dev": "nx serve @litmus/web",
+    "build": "nx build @litmus/web",
+    "preview": "nx preview @litmus/web",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "graph": "nx graph"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "@nx/vite": "^21.3.0",
+    "nx": "^21.3.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.0.6"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.7.1"
+  }
+}
