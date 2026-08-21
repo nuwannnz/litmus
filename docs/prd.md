@@ -1,5 +1,6 @@
 ---
 title: Litmus
+version: 2.0.0
 status: final
 created: 2026-08-19
 updated: 2026-08-21
@@ -649,3 +650,13 @@ The design file is the visual authority; this section names only what carries pr
 13. **§8** — Client-held session tokens are an acceptable risk for a single-user tool, given a strict CSP, sanitised rendering of stored content, and rotating refresh tokens. *(Amended 2026-08-21; supersedes the original httpOnly requirement. Rationale in §8 and `docs/architecture.md` §2.1.)*
 14. **§4.7 / FR-39** — Making "a Task must have a Project or a Due Date" a hard rule is preferable to building an "Unscheduled" surface. *(Decided 2026-08-21, resolving §10 Q12.)*
 15. **§4.1 / FR-38** — `1.0.0` marks completion of the MVP scope in §6.1 rather than an arbitrary date, and the marketing v1/v2/v3 milestones used throughout this document are **not** semantic-version majors. They are scope milestones; the version number describes compatibility.
+
+## 12. Revision History
+
+*This document is versioned. Any change to it bumps `version` in the frontmatter — see
+`CLAUDE.md` § Document versioning for the rule.*
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0.0 | 2026-08-19 | Initial PRD. FR-1…FR-37, journeys, glossary, MVP cut, NFRs, 11 open questions. |
+| 2.0.0 | 2026-08-21 | **Major — a stated requirement was withdrawn.** §8's "session tokens are not readable by page scripts" is dropped and replaced with CSP, sanitised rendering, and rotating refresh tokens (assumption 13). Adds FR-38 (version visible in Settings) and FR-39 (every Task has a Project or a Due Date), the latter amending FR-11, FR-20 and FR-35. Resolves open questions 12, 13 and 14; lists note attachments explicitly as v2 in §6.2. |

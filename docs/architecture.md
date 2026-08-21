@@ -1,7 +1,16 @@
+---
+title: Architecture — Litmus
+version: 1.0.0
+status: proposed
+created: 2026-08-21
+updated: 2026-08-21
+requires: docs/prd.md >= 2.0.0
+---
+
 # Architecture: Litmus
 
 Status: **proposed** — decisions below are recommendations with rationale, not yet implemented.
-Companion to `prd.md` (requirements) and `prd-addendum.md`. Last revised 2026-08-21.
+Companion to `prd.md` (requirements) and `prd-addendum.md`.
 
 ---
 
@@ -21,7 +30,7 @@ Companion to `prd.md` (requirements) and `prd-addendum.md`. Last revised 2026-08
 | Live sync | Supabase Realtime (`postgres_changes`) |
 | Language | TypeScript, end to end |
 | Unit tests | Vitest |
-| Database tests | pgTAP via `supabase test db` — **mandatory**, see §6.3 |
+| Database tests | pgTAP via `supabase test db` — **mandatory**, see §7.3 |
 | E2E | Playwright in a separate Nx project `apps/web-e2e` |
 | Types | `supabase gen types typescript` — schema is the contract |
 | Versioning | release-please + conventional commits, version surfaced in Settings (§8) |
@@ -159,7 +168,7 @@ Two practices follow, and neither is optional:
 - **Default deny.** Enable RLS on every table at creation, in the same migration. A table with RLS
   enabled and no policy denies everything, which is the correct failure mode; a table without RLS
   enabled is world-readable through PostgREST, which is not.
-- **Test the policies** (§6.3). pgTAP tests asserting that user A cannot see user B's rows are the
+- **Test the policies** (§7.3). pgTAP tests asserting that user A cannot see user B's rows are the
   only thing standing between the schema and the internet. This is why database testing is listed as
   mandatory rather than nice-to-have.
 
@@ -417,7 +426,7 @@ drop-in addition. After the change:
 Add a **`libs/api`** library holding the Supabase client, generated `database.types.ts`, and the
 query hooks. It slots in as `domain → api → ui → core → features`, preserving the one-way import
 rule in CLAUDE.md. **Feature modules never import `supabase-js` directly** — that keeps the data
-layer swappable and, more immediately, makes it mockable in tests (§6.2).
+layer swappable and, more immediately, makes it mockable in tests (§7.2).
 
 ### 5.2 Offline (FR-8, §8 "offline tolerance")
 
@@ -461,42 +470,50 @@ blanket invalidation**; after a long offline stretch it's one query instead of a
 
 ---
 
-## 6. Environments
+## 6. Environments, branching and CI/CD
 
-Three, and only one of them costs anything to think about.
+Three environments, each owned by exactly one branch.
 
-| | Purpose | Supabase | Frontend |
-|---|---|---|---|
-| **local** | day-to-day dev, tests, CI | `supabase start` (Docker) | `nx serve` |
-| **dev** | integration, PR previews, phone testing | hosted project `litmus-dev` | Pages preview deployments |
-| **prod** | the real one | hosted project `litmus-prod` | Pages production |
+| | Branch | Purpose | Supabase | Frontend |
+|---|---|---|---|---|
+| **local** | `feature/*` | day-to-day dev, tests, CI | `supabase start` (Docker) | `nx serve` |
+| **dev** | `develop` | integration, testing on a real device | hosted project `litmus-dev` | Pages preview (branch deploy) |
+| **prod** | `main` | the real one | hosted project `litmus-prod` | Pages production |
 
 **The free tier allows exactly two active projects per organisation**, so dev + prod fits precisely,
 with no room for a third. That's the constraint to design around: real development happens locally,
-and `dev` is for integration and testing on a real device — not a per-feature sandbox. (Supabase's
-per-PR Branching feature is Pro-only; local Postgres does the same job for free.)
+and `dev` is for integration — not a per-feature sandbox. (Supabase's per-PR Branching feature is
+Pro-only; local Postgres does the same job for free.)
 
 **Free-tier pause:** a project pauses after **7 consecutive days with no database requests** and
 needs a manual unpause. Prod won't trigger it with daily use; **`dev` very likely will**. Either
-accept it and unpause when needed, or add a weekly GitHub Action ping. Do not discover this
-mid-debugging.
+accept it and unpause when needed, or add a weekly scheduled workflow that pings it. Do not discover
+this mid-debugging.
 
-### 6.1 Promotion
-
-Trunk-based, matching CLAUDE.md's "never push to `main` — PRs only":
+### 6.1 Branching model
 
 ```
-feature branch  →  PR  →  CI: local Supabase, Vitest, pgTAP, Playwright
-                       →  Pages preview deploy, pointed at the dev project
-merge to main   →  supabase db push → prod    +   Pages production deploy
+feature/*  ──PR──▶  develop  ──PR──▶  main
+   │                   │                │
+   local            dev env         production
 ```
 
-A single long-lived `main` is right here — a `develop` branch would add a promotion step with
-nothing to promote, since the only reviewer is also the only author.
+- **`main` is production.** It is deployed, tagged, and never committed to directly.
+- **`develop` is the dev environment.** Everything integrates here first.
+- **Feature branches are cut from `develop`** and merge back into `develop` by PR. Never from `main`
+  — a branch cut from `main` is missing whatever is already integrated on `develop`, and the merge
+  conflict shows up at the least convenient moment.
+- **Releasing is `develop` → `main` by PR.** That PR is the release candidate; what it contains is
+  what goes to production.
+- **Hotfixes** are the one exception: branch from `main`, PR into `main`, then **immediately
+  back-merge `main` into `develop`**. A hotfix that never returns to `develop` gets silently
+  reverted by the next release.
 
-Migrations are forward-only and applied by CI with `supabase db push`, never by hand from a laptop.
-`supabase db diff` generates them locally; they are reviewed in the PR like any other code, because
-that is what they are.
+**One gotcha worth knowing up front:** release-please runs on `main` and commits the version bump
+and `CHANGELOG.md` there (§8). Those commits exist only on `main` until someone brings them back, so
+**`main` must be back-merged into `develop` after every release**. Otherwise `develop`'s version
+drifts behind, and eventually the release PR carries a confusing diff that reverts the changelog.
+Automate it or make it step one of the next release — but don't rely on remembering.
 
 ### 6.2 Configuration
 
@@ -505,12 +522,41 @@ that is what they are.
 | `VITE_SUPABASE_URL` | Pages env var, per environment | public |
 | `VITE_SUPABASE_ANON_KEY` | Pages env var, per environment | **public by design** — RLS protects the data |
 | `SUPABASE_ACCESS_TOKEN`, project refs | GitHub Actions secrets | CI only |
+| `CLOUDFLARE_API_TOKEN`, account id | GitHub Actions secrets | CI only |
 | `service_role` key | GitHub Actions secrets, if ever needed | **never** in any `VITE_`-prefixed var — Vite inlines those into the bundle |
+
+Use **GitHub Environments** (`dev`, `production`) to scope secrets to the workflows that deploy to
+them, rather than one flat repository-wide bag. Production can then carry a required reviewer, which
+makes "never deploy to prod by accident" a platform guarantee instead of a habit.
 
 `supabase/config.toml` is committed and holds the local stack's configuration, so `supabase start`
 reproduces dev exactly.
 
----
+### 6.3 GitHub Actions
+
+Four workflows, each with one job to do:
+
+| Workflow | Trigger | Does |
+|---|---|---|
+| `ci.yml` | PR to `develop` or `main`, and pushes to both | install, typecheck, build, Vitest, pgTAP against a local Supabase, Playwright |
+| `deploy-dev.yml` | push to `develop` | `supabase db push` → dev project, then deploy to Cloudflare Pages preview |
+| `deploy-prod.yml` | push to `main` | `supabase db push` → prod project, then deploy to Pages production |
+| `release-please.yml` | push to `main` | opens/updates the release PR; tags on merge (§8) |
+
+Notes that matter more than the YAML:
+
+- **`ci.yml` exists and passes today** — install, typecheck and build all work against the current
+  repo. Test and migration steps get added to it as those things arrive, rather than committing a
+  workflow that fails until the tooling catches up.
+- **Migrations run before the frontend deploys**, in both deploy workflows. The reverse order ships
+  a client that queries columns which don't exist yet.
+- **Migrations are forward-only and applied by CI**, never by hand from a laptop. `supabase db diff`
+  generates them locally; they are reviewed in the PR like any other code, because that is what they
+  are.
+- **Cache `~/.npm` and the Nx cache** keyed on `package-lock.json`. With `nx affected`, the common
+  PR finishes in well under a minute.
+- **`supabase db push` to prod should require the `production` GitHub Environment**, so a schema
+  change to the real database is gated the same way a deploy is.
 
 ## 7. Testing and TDD
 
@@ -589,7 +635,7 @@ be computed rather than remembered.
 **release-please**, run as a GitHub Action on `main`. It reads conventional commits since the last
 tag, opens a **release PR** that bumps `apps/web/package.json` and updates `CHANGELOG.md`, and tags
 on merge. This fits CLAUDE.md's "PRs only, one approval" exactly — the release itself is a reviewed
-PR, and nothing bumps a version by side effect.
+PR, and nothing bumps a version by side effect. Remember the back-merge that follows it (§6.1).
 
 - `fix:` → patch · `feat:` → minor · `feat!:` / `BREAKING CHANGE:` → major
 - **Start at `0.1.0`.** Cut **`1.0.0` when §6.1's MVP scope ships** — that makes the major version
@@ -633,24 +679,30 @@ incompatible caches instead of deserialising them into a crash (§5.2).
 ## 9. Repository layout
 
 ```
+CLAUDE.md / AGENTS.md       repo-wide: what this is, where things live, policy
 docs/                       prd.md, prd-addendum.md, architecture.md (this)
 supabase/                   config.toml, migrations/*.sql, seed.sql, tests/*.sql (pgTAP)
   functions/                empty in v1 — see §4.4
-src/client/                 existing Nx workspace
+src/client/
+  CLAUDE.md / AGENTS.md     workspace-specific: commands, Nx layout, module contract
   apps/web/                 package.json version = the app version (§8)
   apps/web-e2e/             ← new: Playwright
   libs/api/                 ← new: supabase client, generated types, query hooks
   libs/{ui,domain,core,week,projects,notes}/
-.github/workflows/          ci.yml, release-please.yml, deploy.yml
+.github/workflows/          ci.yml, deploy-dev.yml, deploy-prod.yml, release-please.yml
 ```
 
-CI: `nx affected` for typecheck and Vitest, `supabase start` + pgTAP + Playwright, then deploy on
-merge. `nx affected` keeps the common case under a minute.
+The agent-instruction files are **nested deliberately**: the root pair carries what is true of the
+whole repository, and `src/client/`'s pair carries the Nx workspace detail, loaded only when working
+in there. Splitting them keeps the root file about the project rather than about one of its
+directories (§6.3 of `CLAUDE.md` records the rule).
 
 ---
 
 ## 10. Suggested sequence
 
+0. **Branches and CI.** `develop` cut from `main`, `ci.yml` running typecheck and build. Cheap, and
+   everything after it lands through the flow rather than being retrofitted into it.
 1. **Schema + local stack.** `supabase init`, write the migrations with RLS from the first one, port
    seed data to `seed.sql`. Merging `Task`/`ProjectTask` (§3.1) happens here — it's the change
    everything else assumes.
@@ -701,3 +753,18 @@ Still open, with what this architecture contributes:
 - **Q3 (closing registration)** — Supabase Auth config, not code.
 - **Q8 (project lifecycle)** — untouched, but FR-39 gives it a new edge: deleting or archiving a
   project must not orphan its undated tasks (§3.1).
+
+---
+
+## 12. Revision History
+
+*This document is versioned. Any change to it bumps `version` in the frontmatter — see
+`CLAUDE.md` § Document versioning for the rule.*
+
+| Version | Date | Change |
+|---|---|---|
+| 1.0.0 | 2026-08-21 | Initial architecture. Supabase over AWS; TypeScript end to end with no hand-written backend; PostgREST + RLS; Cloudflare Pages; TanStack Query with offline persistence; Vitest, pgTAP and Playwright; local/dev/prod on `feature → develop → main`; GitHub Actions for CI/CD; release-please for versioning. |
+
+*Drafts preceding 1.0.0 are in git history (a C# API on Fly.io, later dropped; a trunk-based
+single-`main` flow, later replaced by the model in §6.1). They were never released under a version
+number and are recorded here only so the reversals are not mistaken for oversights.*
