@@ -15,6 +15,30 @@ permissions:
   contents: read
 
 jobs:
+  identity:
+    name: Commit identity
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # This machine's *global* git identity is a work account, and Litmus only
+      # stays correct because of a repo-local user.email override — which a
+      # fresh clone does not have. This check is the backstop for that.
+      - name: Reject commits from a non-personal identity
+        run: |
+          BLOCKED='swivelgroup\.com\.au'
+          offenders=$(git log --format='%h  author %an <%ae>%n%h  committer %cn <%ce>' \
+            | grep -Ei "$BLOCKED" || true)
+          if [ -n "$offenders" ]; then
+            echo "::error::Commits carry a blocked (work) identity:"
+            echo "$offenders"
+            exit 1
+          fi
+          echo "All commit identities OK."
+
   client:
     name: Typecheck and build
     runs-on: ubuntu-latest
