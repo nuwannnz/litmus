@@ -2,6 +2,10 @@
 
 Guidance for coding agents working in this repository.
 
+Scoped guidance lives alongside the code it describes — `src/client/AGENTS.md` covers the Nx
+workspace (commands, module contract, data layer, styling) and applies when working in there.
+Keep repo-wide facts here and workspace detail there.
+
 ## What this is
 
 Litmus is a personal task/project/notes web app: a 7-day Week board, Projects
@@ -12,95 +16,79 @@ teams, invitations, or permission model.
 
 There is no backend yet. All app state is in-memory (seed data + a reducer);
 auth accepts any credentials and just stores a session in `localStorage`.
+`docs/architecture.md` describes the backend that is planned but not built —
+read it as intent, not as a description of the code.
 
 ## Where things live
 
-- **Product requirements**: `docs/prd.md` (FR-1…FR-37, journeys, glossary) and
+- **Product requirements**: `docs/prd.md` (FR-1…FR-39, journeys, glossary) and
   `docs/prd-addendum.md` (screen-ID index, deferred specs, rejected
-  alternatives). Read `prd.md` first; addendum is a companion, not a
+  alternatives). Read `prd.md` first; the addendum is a companion, not a
   duplicate.
+- **Architecture**: `docs/architecture.md` — stack decisions, data model,
+  environments, branching, CI/CD, versioning. Status is `proposed`: none of it
+  is implemented yet.
 - **Design source**: `docs/ui-design.pen`, ~1.5 MB of JSON. Never read it
   whole — look up a screen by its ID (cited in `prd.md`), e.g.
-  `grep -n '"id": "A8V5X"' docs/ui-design.pen`. Only the `pencil` MCP tools
-  should touch `.pen` files directly (Read/Grep on the raw file works for ID
-  lookups but won't render it).
+  `grep -n '"id": "A8V5X"' docs/ui-design.pen`. Prefer the `pencil` MCP tools
+  over raw Read/Grep when actually editing or generating design content.
 - **Clickable prototype**: `docs/prototype/` — static HTML/CSS/JS, no build
-  step, no relation to the real app's code. Useful for seeing intended
+  step, unrelated to the real app's code. Useful for seeing intended
   behavior (`open docs/prototype/index.html`), not a source of truth for
   implementation.
 - **App code**: `src/client/`, an Nx + npm-workspaces monorepo. See
-  "Architecture" below.
+  `src/client/CLAUDE.md`.
 - **New planning docs** (architecture decisions, ADRs, further specs) belong
   in `docs/`, alongside the PRD — don't scatter them elsewhere in the repo.
 
-## Commands
+## Document versioning
 
-All from `src/client/`:
+`docs/prd.md` and `docs/architecture.md` carry a `version` in their YAML
+frontmatter and a Revision History table at the end. **Any change to either
+file bumps the version and adds a row.** Semantic versioning, applied to
+prose:
 
-```bash
-npm install
-npm run dev         # nx serve @litmus/web — http://localhost:4200
-npm run build        # nx build @litmus/web → dist/apps/web
-npm run preview       # nx preview @litmus/web
-npm run typecheck     # tsc -p tsconfig.json --noEmit
-npm run graph        # nx dependency graph
+- **MAJOR** — a previously stated requirement or decision is **withdrawn or
+  reversed**. Work already built against the old text is now wrong.
+- **MINOR** — new requirements, sections or decisions **added**. Everything
+  already stated still holds.
+- **PATCH** — clarifications, typos, formatting, cross-reference fixes. No
+  one's understanding changes.
+
+Also update `updated:` in the frontmatter. When the two documents disagree,
+`prd.md` wins — it says what the product must do; `architecture.md` says how,
+and declares which PRD version it was written against via `requires:`.
+
+Never renumber an existing FR. New requirements take the next free number even
+when that puts them out of order in their section — FR IDs are referenced from
+tests, commits and the addendum, and stability is worth more than tidiness.
+
+## Branching and environments
+
+```
+feature/*  ──PR──▶  develop  ──PR──▶  main
+   │                   │                │
+   local            dev env         production
 ```
 
-There is no test runner or linter configured yet. Don't invent test/lint
-commands or assume a framework — if you add one, record the real invocation
-here.
+- **`main` is production.** Deployed and tagged. Never commit to it directly.
+- **`develop` is the dev environment.** Everything integrates here first.
+- **Cut feature branches from `develop`**, never from `main`, and merge them
+  back into `develop` by PR.
+- **Release by PR from `develop` into `main`.**
+- **Hotfixes** branch from `main` and PR into `main`, then are **immediately
+  back-merged into `develop`** — otherwise the next release reverts them.
+- After a release, **back-merge `main` into `develop`**: release-please commits
+  the version bump and `CHANGELOG.md` onto `main` only.
 
-## Architecture
-
-Nx monorepo, one shipped app today:
-
-```
-apps/web/     the app — routing, auth, the shell, the landing page
-libs/ui/      design system: tokens, primitives, icons, theme, toasts
-libs/domain/  types, constants, seed data, pure helpers
-libs/core/    workspace state (reducer), the command registry, the module contract
-libs/week/    Week board + Task Detail
-libs/projects/ Projects dashboard + Project Detail
-libs/notes/   Notes tree + editor
-```
-
-Dependencies run one way: `domain → ui → core → feature modules → apps/web`.
-Path aliases (`@litmus/ui`, `@litmus/domain`, `@litmus/core`, `@litmus/week`,
-`@litmus/projects`, `@litmus/notes`) are declared in
-`src/client/tsconfig.base.json`.
-
-**Feature modules are libraries, not folders inside the app.** Week,
-Projects and Notes each export a single `AppModule` descriptor (contract in
-`libs/core/src/modules/types.ts`):
-
-```ts
-export const weekModule: AppModule = {
-  id: 'week',
-  label: 'Week',
-  icon: 'calendar',
-  path: 'week',
-  routes: [{ index: true, element: <WeekPage /> }],
-  Bridge: WeekCommands, // publishes this module's command-palette entries
-};
-```
-
-`apps/web/src/app/modules.ts` lists them; the shell builds the nav rail, the
-router, and the `1`/`2`/`3` shortcuts from that list alone. **The shell never
-imports a module's internals, and modules never import each other** — they
-link across through `appPaths` (`@litmus/core`) and share UI through
-`@litmus/ui`. Add a module by adding a library + one entry in `modules.ts`.
-
-**Data layer**: `libs/core/src/workspace` holds a single reducer
-(`WorkspaceAction` union) operating on `WorkspaceState` (tasks, projects,
-projectTasks, notes), seeded via `structuredClone` from `libs/domain`'s seed
-data. This is the one place an API would plug in — there's no fetch/service
-layer to route around.
-
-**Styling**: plain CSS, token-driven, split by owner — `@litmus/ui` holds
-tokens/reset/shared primitives, each module ships only its own layout CSS.
-Theme is `data-theme` on `<html>`, switched by `ThemeProvider`
-(`@litmus/ui`) and persisted in `localStorage`.
+CI/CD is GitHub Actions — `ci.yml` on every PR, `deploy-dev.yml` on `develop`,
+`deploy-prod.yml` and `release-please.yml` on `main`. Details in
+`docs/architecture.md` §6.
 
 ## Policy
 
-- Never push to `main` — PRs only, one approval required.
+- Always use feature branches and semantic comments (Conventional Commits —
+  the app version is derived from them, so the prefix is load-bearing).
+- Never push to `main` or `develop` directly — PRs only, one approval required.
+- Bump the document version whenever `docs/prd.md` or `docs/architecture.md`
+  changes (see above).
