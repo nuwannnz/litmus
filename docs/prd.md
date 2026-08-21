@@ -2,7 +2,7 @@
 title: Litmus
 status: final
 created: 2026-08-19
-updated: 2026-08-19
+updated: 2026-08-21
 supersedes: the earlier design-derived screen inventory previously at docs/prd.md
 design_source: docs/ui-design.pen (28 frames, verified 2026-08-19)
 ---
@@ -20,7 +20,7 @@ It builds on two existing inputs rather than duplicating them:
 - **`docs/ui-design.pen`** — the source design file (28 frames: 24 product screens, 2 reusable components, 1 marketing design study, 1 blank canvas artifact; 21 themed design tokens). It is the visual authority. Screen IDs from this file are cited inline against each feature so any requirement can be traced back to the frame that motivated it. All cited IDs were re-verified against the file on 2026-08-19.
 - **An earlier design-derived screen inventory**, which previously occupied this file path and has been replaced by this document. It was a faithful catalogue of what the frames contain, but a design catalogue rather than a product definition: no vision, user, journeys, glossary, MVP cut, metrics, or NFRs. Everything in it was reconciled into this PRD before removal — its screen-ID index and token table now live in `prd-addendum.md` §B and §A respectively, in both cases more completely than the original held them.
 
-Vocabulary is fixed by the **Glossary (§3)** — FRs, journeys, and metrics use those terms verbatim. Features are grouped by capability with FRs nested and numbered globally (FR-1 … FR-37) so the numbers survive reorganisation. Inferences are tagged `[ASSUMPTION]` inline and indexed in §11. Design-file mechanics, deferred specifications, and rejected-alternative rationale live in the companion **`prd-addendum.md`** in this same folder.
+Vocabulary is fixed by the **Glossary (§3)** — FRs, journeys, and metrics use those terms verbatim. Features are grouped by capability with FRs nested and numbered globally (FR-1 … FR-39) so the numbers survive reorganisation. Inferences are tagged `[ASSUMPTION]` inline and indexed in §11. Design-file mechanics, deferred specifications, and rejected-alternative rationale live in the companion **`prd-addendum.md`** in this same folder.
 
 ## 1. Vision
 
@@ -73,7 +73,7 @@ Litmus has exactly one user in v1: its builder — someone who runs several pers
 
 *These terms are used verbatim throughout this document and in every downstream artifact. Synonyms are a discipline violation.*
 
-- **Task** — The atomic unit of work. Has a title, a **Status**, and optionally a **Category**, **Project**, **Due Date**, time range, priority, assignee, description, and **Subtasks**. A Task belongs to at most one Project.
+- **Task** — The atomic unit of work. Has a title, a **Status**, and optionally a **Category**, **Project**, **Due Date**, time range, priority, assignee, description, and **Subtasks**. A Task belongs to at most one Project, and always has a **Project**, a **Due Date**, or both (FR-39) — the two are individually optional but not simultaneously absent.
 - **Subtask** — A named checklist item inside exactly one Task. Has only a title and a done/not-done state. Subtasks are not Tasks: they never appear on the Week Board and have no Due Date.
 - **Status** — A Task's position in a fixed three-value enum: **To Do**, **In Progress**, **Done**. Identical across every surface.
 - **Due Date** — The calendar day a Task is intended to be done. The sole mechanism by which a Task appears on the **Week Board**. Optional; a Task without one exists only inside its Project.
@@ -123,8 +123,22 @@ The user can reach a Settings surface and adjust application-level preferences.
 
 **Consequences (testable):**
 - Settings is reachable from the rail on desktop and the account avatar on mobile.
-- v1 contains: theme (light / dark / follow system), week start day, account name and email, and sign-out.
+- v1 contains: theme (light / dark / follow system), week start day, account name and email, sign-out, and an About row carrying the application version (FR-38).
 - `[ASSUMPTION: no Settings screen exists in the design file despite the nav item; this minimal scope is inferred and needs design before build.]`
+
+#### FR-38: The running version is visible
+
+The user — who is also the person who will debug this — can see exactly which build they are looking at, without opening developer tools.
+
+*Numbered 38 rather than 4 so that existing FR references in tests, commits and `prd-addendum.md` stay stable. Grouped here because it belongs to the Shell.*
+
+**Consequences (testable):**
+- Settings carries an About row displaying the application version as `MAJOR.MINOR.PATCH` (e.g. `Litmus 0.4.2`).
+- The build's short commit SHA and build date are shown as secondary text alongside it.
+- The version is fixed at build time — it is never fetched at runtime, and a stale cache cannot show a version other than the one actually running.
+- The version follows Semantic Versioning and is derived from commit history rather than set by hand. `1.0.0` is cut when the MVP scope in §6.1 is complete; before that the app is `0.x`.
+- The row is presented quietly, as a diagnostic rather than a feature, consistent with the calm tone in §9.
+- Settings is the **only** place the version appears. It is not shown on the authentication screens, in the page source, or anywhere reachable without signing in (§10, Q14).
 
 ---
 
@@ -224,7 +238,7 @@ The user can add a Task to a specific day without leaving the board or opening a
 - Each column has a persistent "Add a task" affordance at its foot.
 - Activating it produces an inline title field in that column; committing creates a Task with that day's Due Date, Status To Do, and no Project.
 - The column's count and the header total both update immediately.
-- A global "New Task" action is also available from the header for creating a Task without picking a day first.
+- A global "New Task" action is also available from the header for creating a Task without picking a day first — but it cannot create a Task with neither a Project nor a Due Date, per FR-39.
 
 #### FR-12: Task Card
 
@@ -308,7 +322,7 @@ The user can set the attributes that place a Task in time and in a Project. Real
 
 **Consequences (testable):**
 - The panel exposes Category (tag), Project (folder — navigates to Project Detail), Date, Time as a start–end range, Priority (flag), and Assignee (user), each with icon, label, and value.
-- Clearing the Date removes the Task from the Week Board without otherwise changing it.
+- Clearing the Date removes the Task from the Week Board without otherwise changing it — and is available only when the Task belongs to a Project, per FR-39.
 - Assignee always resolves to the single Account holder in v1 and is not a picker.
 
 #### FR-21: Subtasks
@@ -476,7 +490,7 @@ A Task appears on the Week Board if and only if it has a Due Date falling in the
 **Consequences (testable):**
 - Setting a Due Date on a Task from Task Detail, the New Project modal, or a Project Board card places it on the Week Board without any further action.
 - Changing a Due Date moves the Task between columns or out of the displayed week entirely, while leaving its Project, Status, and Progress contribution untouched.
-- Clearing a Due Date removes it from the Week Board only.
+- Clearing a Due Date removes it from the Week Board only, and is permitted only when the Task has a Project to fall back to (FR-39).
 - The rule is surfaced in-product as hint text on Project Detail: "Tasks with a due date automatically appear on your Week board."
 
 #### FR-36: One Status model
@@ -496,6 +510,19 @@ A Task's Category renders identically wherever the Task appears.
 - Categories are a flat list (Design, Dev, QA, Docs observed in the design), each bound to one pastel token, applied consistently across Week Board, Project Board, Project List, and Task Detail.
 - A Task has at most one Category. `[ASSUMPTION: every frame shows exactly one tag per Task — single-valued is inferred, not stated.]`
 - Category is independent of Project: two Tasks in different Projects can share a Category.
+
+#### FR-39: Every Task has a home
+
+A Task always belongs to a Project, carries a Due Date, or both — it can never be reachable from neither surface. Realizes UJ-2 (edge case).
+
+**Consequences (testable):**
+- A Task with no Project **must** have a Due Date; a Task with no Due Date **must** have a Project. The two are alternatives, not both optional at once.
+- Clearing the Due Date of a Task that has no Project is refused, as is removing the Project from a Task that has no Due Date. The refusal explains the rule rather than failing silently, in the plain voice of §9 — e.g. "Give this task a project first, or it won't appear anywhere."
+- The affordance that would perform the refused action is disabled with the same explanation available, rather than being offered and then rejected.
+- No creation path can produce a Task violating the rule: FR-11's column affordance supplies the day's Due Date, FR-33 supplies the Project, and FR-11's global "New Task" action requires one of the two before it will commit.
+- The rule holds at the data layer, not only in the interface, so it cannot be bypassed by a client that has not been updated.
+
+**Rationale:** both fields are individually optional (FR-20), which without this rule permits a Task that appears on no Week Board and no Project Board — findable only by search, and in practice lost. Rather than build an "Unscheduled" surface to hold such Tasks, v1 makes the state unreachable. Resolves §10, Q12.
 
 ## 5. Non-Goals (Explicit)
 
@@ -518,7 +545,7 @@ Litmus is **not** a team tool and **not** a commercial product, and v1 will not 
 
 ### 6.1 In Scope
 
-- **Application Shell** — nav rail and mobile tab bar, light/dark theming via design tokens, minimal Settings (§4.1).
+- **Application Shell** — nav rail and mobile tab bar, light/dark theming via design tokens, minimal Settings including the version row (§4.1, FR-38).
 - **Account, Authentication and Sync** — register, sign in, password reset, Sessions across devices, and cross-device sync (§4.2). Social sign-in optional per FR-7.
 - **Week Board** — seven-day view, week navigation, inline task creation, Task Card, overflow and empty behaviour, task search, and the mobile date-pill layout (§4.3).
 - **Task Detail** — full view/edit including Status, metadata, description, Subtasks, complete and delete, on desktop and mobile (§4.4, minus Linked Notes).
@@ -530,6 +557,7 @@ Litmus is **not** a team tool and **not** a commercial product, and v1 will not 
 ### 6.2 Out of Scope for MVP
 
 - **The entire Notes surface — v2.** Editor, folder tree, tags, note search, daily-notes convention, empty and unlinked states. Four design frames (`ft72J`, `W6V7FQ`, `RPGnv`, `nDqBf`) are fully specified and waiting. `[NOTE FOR PM]` This is the largest deferred item and the one most likely to be missed — the linked-notes idea is a real part of the product concept, not a nice-to-have, and the mock landing page leads with it.
+- **Note attachments — v2, with Notes.** Images and files inside a Note, and the object storage to hold them. Nothing in this PRD covers upload, size or type limits, presentation in the editor, or what becomes of a stored file when its Note is deleted; the FR is written when Notes is specified. Listed explicitly because "file storage for notes" is easy to assume is already specified somewhere — it is not (§10, Q13).
 - **Note linking — v2, with Notes.** The Linked Notes sections in Task Detail (`A8V5X`) and Project Detail, and the Link Note Modal (`z7ZH8`) — which the design specifies completely as a command-palette picker with search, recent notes grouped by folder, an inline "create and link" row, and keyboard navigation. Full specification preserved in `prd-addendum.md` §D so v2 does not have to re-derive it.
 - **Notes rich formatting beyond markdown-lite — v3.** When Notes ships in v2 it ships as markdown-lite: headings, bold/italic, bullets, checklists, and links, rendered live as typed. The slash-command block menu, code blocks with language label and copy, callouts, backlinks, and the formatting toolbar are deferred further (`prd-addendum.md` §E).
 - **All collaboration features — not planned.** See §5.
@@ -563,7 +591,13 @@ This is a personal tool. The only success that matters is that it survives conta
 - **Durability** — No user-entered content is lost on refresh, crash, or connectivity loss. Deletion is the only path to data loss, and it confirms first (FR-22).
 - **Responsive behaviour** — Every surface is usable from 390 px (the design's mobile frame width) up to 1600 px (the desktop frame width). Auth screens are drawn at 1440 px and must degrade to phone width. No horizontal page scroll at any width.
 - **Accessibility** — Text and interactive elements meet WCAG AA contrast in **both** themes; the pastel tag palette and the theme-invariant `dot-*` tokens are the risk area and must be verified rather than assumed. Every action reachable by drag has a non-drag equivalent (FR-31, FR-34). `[ASSUMPTION: AA is the target — inferred from the design file's own stated component principle "every component meets WCAG AA contrast out of the box".]`
-- **Security** — Passwords stored as salted hashes only; reset links single-use and time-limited; authentication errors non-enumerating (§4.2). Session tokens are not readable by page scripts.
+- **Security** — Passwords stored as salted hashes only; reset links single-use and time-limited; authentication errors non-enumerating (§4.2). Access tokens are short-lived and refresh tokens rotate on use, with reuse of a spent refresh token invalidating the session family.
+
+  `[AMENDED 2026-08-21: this bullet previously required that "session tokens are not readable by page scripts", i.e. httpOnly cookies. That requirement is dropped, deliberately. Honouring it requires terminating the session on a server the product controls, and — because a browser that cannot read its own token cannot talk to the database directly either — it requires hand-writing every endpoint behind that server. The architecture instead has the client hold its own session, which removes the backend entirely (see docs/architecture.md §2.1). The residual risk is narrower than it sounds: the threat is XSS, and an XSS against an httpOnly-cookie session can still act as the user — it merely cannot carry the token off-device. For a single-user tool with no third-party embeds and no content authored by anyone else, that is an acceptable trade, and it is paid for by the three compensating requirements below.]`
+
+- **Content Security Policy** — A strict CSP is served on every page: no inline scripts, no `unsafe-eval`, and an explicit origin allowlist. This is affordable precisely because §8's Privacy requirement already forbids third-party analytics, telemetry, ad tooling and embeds — there is nothing legitimate to allow.
+- **Untrusted content is sanitised before render** — Note bodies are user-authored markup rendered back into the page, making them the app's most likely injection vector. Every render path that turns stored content into markup sanitises it first. This is a v2 requirement in practice, since Notes ships in v2, but it is stated here because it is a condition of the security posture above rather than a feature of Notes.
+- **Privileged credentials never reach the client** — Any key capable of bypassing per-user data isolation exists only in deployment secrets. The client ships only credentials that are safe to publish, and data isolation is enforced by the database itself rather than by application code that could forget.
 - **Theming integrity** — No colour is hard-coded outside the token layer (FR-2), so a token change propagates everywhere.
 - **Privacy** — Single-tenant personal data. No third-party analytics, no telemetry, no ad tooling, no third-party embeds on any screen.
 
@@ -591,7 +625,10 @@ The design file is the visual authority; this section names only what carries pr
 8. **Project lifecycle.** Project Detail shows `Status: Active`, implying other values. Can a Project be archived or completed, and what happens to its Tasks on the Week Board if so?
 9. **Week start day.** FR-3 offers it as a setting, but every frame shows Mon–Sun. Is configurability actually wanted, or should Monday be fixed?
 10. **The Members chip and Team column.** FR-28 and FR-24 keep them, reading "1", to preserve the designed layouts. Keep, or redesign those layouts without them?
-11. **Data export.** Listed as a Non-Goal (§5) but flagged there as worth revisiting — it is cheap insurance and the mock landing page was right to promise it. Pull into v1.1?
+11. **Data export.** Listed as a Non-Goal (§5) but flagged there as worth revisiting — it is cheap insurance and the mock landing page was right to promise it. Pull into v1.1? *(Cheaper than assumed — roughly an afternoon against the planned schema.)*
+12. **~~Where does a task with no Project and no Due Date live?~~** **Resolved 2026-08-21 → FR-39.** Nowhere, because the state is now unreachable. A Task must have a Project or a Due Date; clearing whichever is the last one is refused, at the data layer as well as in the interface. This was chosen over building an "Unscheduled" surface to hold such Tasks — the state is rare, arises only by clearing a field, and a rule that keeps every Task on at least one board is simpler than a third place to look.
+13. **~~Note attachments have no requirement anywhere.~~** **Resolved 2026-08-21 → deferred to v2**, with the Notes surface (§6.2). Nothing in v1 uploads, stores, or renders a file, so v1 needs no object storage at all. The FR covering upload, size and type limits, editor presentation, and what happens to a stored file when its Note is deleted is written when Notes is specified for v2 — it is listed in §6.2 so it is not mistaken for something already covered.
+14. **~~Does the version string belong anywhere besides Settings?~~** **Resolved 2026-08-21 → no.** The Settings About row is the only place the version appears. Not on the auth screens, not in the page source, not in the console.
 
 ## 11. Assumptions Index
 
@@ -609,3 +646,6 @@ The design file is the visual authority; this section names only what carries pr
 10. **§4.6 / FR-32** — The Members stat chip is retained reading "1" to preserve the four-chip stat row layout.
 11. **§4.7 / FR-37** — A Task carries at most one Category; single-valued is inferred from the frames.
 12. **§8** — WCAG AA is the accessibility target, inferred from the design file's own stated component principle.
+13. **§8** — Client-held session tokens are an acceptable risk for a single-user tool, given a strict CSP, sanitised rendering of stored content, and rotating refresh tokens. *(Amended 2026-08-21; supersedes the original httpOnly requirement. Rationale in §8 and `docs/architecture.md` §2.1.)*
+14. **§4.7 / FR-39** — Making "a Task must have a Project or a Due Date" a hard rule is preferable to building an "Unscheduled" surface. *(Decided 2026-08-21, resolving §10 Q12.)*
+15. **§4.1 / FR-38** — `1.0.0` marks completion of the MVP scope in §6.1 rather than an arbitrary date, and the marketing v1/v2/v3 milestones used throughout this document are **not** semantic-version majors. They are scope milestones; the version number describes compatibility.
