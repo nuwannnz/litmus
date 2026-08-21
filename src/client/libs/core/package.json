@@ -7,5 +7,10 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
+  },
+  "nx": {
+    "tags": [
+      "type:core"
+    ]
   }
 }

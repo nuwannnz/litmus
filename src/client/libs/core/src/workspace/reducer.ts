@@ -10,7 +10,11 @@ import {
 } from '@litmus/domain';
 import type { WorkspaceAction, WorkspaceState } from './state';
 
-const patchTask = (state: WorkspaceState, id: string, patch: (t: Task) => Task): WorkspaceState => ({
+const patchTask = (
+  state: WorkspaceState,
+  id: string,
+  patch: (t: Task) => Task,
+): WorkspaceState => ({
   ...state,
   tasks: state.tasks.map((t) => (t.id === id ? patch(t) : t)),
 });
@@ -73,9 +77,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
     case 'subtask/toggle':
       return patchTask(state, action.taskId, (t) => ({
         ...t,
-        subtasks: t.subtasks.map((s) =>
-          s.id === action.subtaskId ? { ...s, done: !s.done } : s,
-        ),
+        subtasks: t.subtasks.map((s) => (s.id === action.subtaskId ? { ...s, done: !s.done } : s)),
       }));
 
     case 'subtask/add':
@@ -92,9 +94,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
 
     case 'task/linkNote':
       return patchTask(state, action.taskId, (t) =>
-        t.noteIds.includes(action.noteId)
-          ? t
-          : { ...t, noteIds: [...t.noteIds, action.noteId] },
+        t.noteIds.includes(action.noteId) ? t : { ...t, noteIds: [...t.noteIds, action.noteId] },
       );
 
     case 'project/add': {

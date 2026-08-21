@@ -75,6 +75,8 @@ export function toggleChecklistItem(
 ): string {
   const block = blocks[blockIndex];
   if (!block || block.kind !== 'checklist') return serializeNoteBody(blocks);
-  const items = block.items.map((item, i) => (i === itemIndex ? { ...item, done: !item.done } : item));
+  const items = block.items.map((item, i) =>
+    i === itemIndex ? { ...item, done: !item.done } : item,
+  );
   return replaceBlock(blocks, blockIndex, serializeChecklist(items));
 }

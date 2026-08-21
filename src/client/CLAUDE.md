@@ -40,12 +40,12 @@ Install the CLI with `brew install supabase/tap/supabase`, or prefix each comman
 `npx supabase@latest` for a one-off. It is deliberately not an npm dependency of this
 workspace — it is a repo-level tool, not a client one. Ports come from `config.toml`:
 
-| | URL |
-|---|---|
-| API — PostgREST and auth | `http://127.0.0.1:54321` |
-| Postgres | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
-| Studio | `http://127.0.0.1:54323` |
-| Local inbox — auth mail | `http://127.0.0.1:54324` |
+|                          | URL                                                       |
+| ------------------------ | --------------------------------------------------------- |
+| API — PostgREST and auth | `http://127.0.0.1:54321`                                  |
+| Postgres                 | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Studio                   | `http://127.0.0.1:54323`                                  |
+| Local inbox — auth mail  | `http://127.0.0.1:54324`                                  |
 
 `supabase status` prints the local `anon` key; it and the API URL are what `VITE_SUPABASE_URL`
 and `VITE_SUPABASE_ANON_KEY` point at locally (`docs/architecture.md` §6.2). The anon key is

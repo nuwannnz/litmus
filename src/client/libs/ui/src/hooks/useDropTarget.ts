@@ -21,12 +21,15 @@ export interface DropTargetResult {
  * Native HTML5 drop zone. Enter/leave are counted because they also fire for
  * every child element the pointer crosses.
  */
-export function useDropTarget({ accept, onDrop, disabled = false }: DropTargetOptions): DropTargetResult {
+export function useDropTarget({
+  accept,
+  onDrop,
+  disabled = false,
+}: DropTargetOptions): DropTargetResult {
   const [isOver, setIsOver] = useState(false);
   const depth = useRef(0);
 
-  const carriesPayload = (e: DragEvent<HTMLElement>) =>
-    e.dataTransfer.types.includes(accept);
+  const carriesPayload = (e: DragEvent<HTMLElement>) => e.dataTransfer.types.includes(accept);
 
   const onDragOver = useCallback(
     (e: DragEvent<HTMLElement>) => {
@@ -47,11 +50,14 @@ export function useDropTarget({ accept, onDrop, disabled = false }: DropTargetOp
     [disabled, accept],
   );
 
-  const onDragLeave = useCallback((e: DragEvent<HTMLElement>) => {
-    if (disabled || !carriesPayload(e)) return;
-    depth.current = Math.max(0, depth.current - 1);
-    if (depth.current === 0) setIsOver(false);
-  }, [disabled, accept]);
+  const onDragLeave = useCallback(
+    (e: DragEvent<HTMLElement>) => {
+      if (disabled || !carriesPayload(e)) return;
+      depth.current = Math.max(0, depth.current - 1);
+      if (depth.current === 0) setIsOver(false);
+    },
+    [disabled, accept],
+  );
 
   const handleDrop = useCallback(
     (e: DragEvent<HTMLElement>) => {

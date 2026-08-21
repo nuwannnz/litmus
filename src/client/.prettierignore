@@ -1,0 +1,9 @@
+# Build output and caches
+dist
+node_modules
+.nx
+.vite
+*.tsbuildinfo
+
+# Lockfiles are written by the package manager, not by hand
+package-lock.json

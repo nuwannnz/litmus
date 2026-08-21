@@ -17,7 +17,9 @@ export function DayPills({ days, selected, onSelect }: DayPillsProps) {
           role="tab"
           aria-selected={day.iso === selected}
           aria-label={day.long}
-          className={['day-pill', day.iso === selected ? 'is-selected' : ''].filter(Boolean).join(' ')}
+          className={['day-pill', day.iso === selected ? 'is-selected' : '']
+            .filter(Boolean)
+            .join(' ')}
           onClick={() => onSelect(day.iso)}
         >
           {day.name.charAt(0)}

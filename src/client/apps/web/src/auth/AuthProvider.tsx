@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { CURRENT_USER, PEOPLE } from '@litmus/domain';
 
 export interface AuthUser {
@@ -72,10 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(() => persist(null), [persist]);
 
-  const value = useMemo(
-    () => ({ user, signIn, signUp, signOut }),
-    [user, signIn, signUp, signOut],
-  );
+  const value = useMemo(() => ({ user, signIn, signUp, signOut }), [user, signIn, signUp, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

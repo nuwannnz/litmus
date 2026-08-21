@@ -2,7 +2,9 @@
    Litmus — Week board and Task Detail
    ========================================================================== */
 
-.week-view.panel-open { padding-right: var(--panel-w); }
+.week-view.panel-open {
+  padding-right: var(--panel-w);
+}
 
 .board {
   display: grid;
@@ -36,11 +38,22 @@
   flex-shrink: 0;
 }
 
-.day-head .count-pill { margin-left: auto; }
-.day-name { font-size: 12.5px; font-weight: 650; }
-.day-num { font-size: 12.5px; color: var(--text-muted); font-weight: 500; }
+.day-head .count-pill {
+  margin-left: auto;
+}
+.day-name {
+  font-size: 12.5px;
+  font-weight: 650;
+}
+.day-num {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
 
-.day.is-today .day-name { color: var(--accent); }
+.day.is-today .day-name {
+  color: var(--accent);
+}
 
 .day.is-today .day-num {
   display: grid;
@@ -77,7 +90,9 @@
   color: var(--text-muted);
   font-size: 12.5px;
   font-weight: 500;
-  transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+  transition:
+    background var(--fast) var(--ease),
+    color var(--fast) var(--ease);
 }
 
 .add-task:hover {
@@ -104,7 +119,11 @@
   margin-bottom: 8px;
 }
 
-.composer-row { display: flex; align-items: center; gap: 6px; }
+.composer-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .composer select {
   height: 28px;
@@ -115,7 +134,11 @@
   font-size: 11.5px;
 }
 
-.composer .btn { height: 28px; padding: 0 12px; font-size: 12px; }
+.composer .btn {
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+}
 
 /* ===================================================== TASK DETAIL PANEL == */
 .panel {
@@ -134,7 +157,12 @@
   animation: slide-in var(--base) var(--ease);
 }
 
-@keyframes slide-in { from { transform: translateX(24px); opacity: 0; } }
+@keyframes slide-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
 
 .panel-head {
   display: flex;
@@ -160,11 +188,23 @@
   margin-left: -4px;
 }
 
-.panel-title:focus { outline: 2px solid var(--accent); }
+.panel-title:focus {
+  outline: 2px solid var(--accent);
+}
 
-.panel-section { margin-bottom: 22px; }
-.panel-section > .label--caps { display: block; margin-bottom: 9px; }
-.panel-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+.panel-section {
+  margin-bottom: 22px;
+}
+.panel-section > .label--caps {
+  display: block;
+  margin-bottom: 9px;
+}
+.panel-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
 
 .status-switch {
   display: grid;
@@ -187,13 +227,16 @@
   color: var(--text-secondary);
 }
 
-.status-switch button[aria-pressed="true"] {
+.status-switch button[aria-pressed='true'] {
   background: var(--surface);
   color: var(--text-primary);
   box-shadow: var(--shadow-xs);
 }
 
-.meta-list { display: flex; flex-direction: column; }
+.meta-list {
+  display: flex;
+  flex-direction: column;
+}
 
 .meta-row {
   display: flex;
@@ -203,9 +246,19 @@
   font-size: 13px;
 }
 
-.meta-row > .icon { color: var(--text-muted); }
-.meta-row .k { color: var(--text-secondary); }
-.meta-row .v { margin-left: auto; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.meta-row > .icon {
+  color: var(--text-muted);
+}
+.meta-row .k {
+  color: var(--text-secondary);
+}
+.meta-row .v {
+  margin-left: auto;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .meta-row select,
 .meta-row input {
@@ -220,10 +273,19 @@
 }
 
 .meta-row select:hover,
-.meta-row input:hover { background: var(--surface-sunken); }
-.meta-row .chip select { font-size: 11px; font-weight: 600; }
+.meta-row input:hover {
+  background: var(--surface-sunken);
+}
+.meta-row .chip select {
+  font-size: 11px;
+  font-weight: 600;
+}
 
-.divider { height: 1px; background: var(--border); margin: 4px 0 20px; }
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0 20px;
+}
 
 .panel-desc {
   font-size: 13px;
@@ -235,8 +297,14 @@
   min-height: 24px;
 }
 
-.panel-desc:focus { outline: 2px solid var(--accent); color: var(--text-primary); }
-.panel-desc:empty::before { content: attr(data-placeholder); color: var(--text-muted); }
+.panel-desc:focus {
+  outline: 2px solid var(--accent);
+  color: var(--text-primary);
+}
+.panel-desc:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+}
 
 .subtask {
   display: flex;
@@ -246,14 +314,29 @@
   font-size: 13px;
 }
 
-.subtask.is-done span { color: var(--text-secondary); text-decoration: line-through; }
-.subtask > span { flex: 1; }
+.subtask.is-done span {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+.subtask > span {
+  flex: 1;
+}
 
-.subtask-del { opacity: 0; color: var(--text-muted); }
-.subtask:hover .subtask-del { opacity: 1; }
-.subtask-del:hover { color: #e0655c; }
+.subtask-del {
+  opacity: 0;
+  color: var(--text-muted);
+}
+.subtask:hover .subtask-del {
+  opacity: 1;
+}
+.subtask-del:hover {
+  color: #e0655c;
+}
 
-.subtask-add .input { padding: 9px 12px; font-size: 13px; }
+.subtask-add .input {
+  padding: 9px 12px;
+  font-size: 13px;
+}
 
 .panel-foot {
   display: flex;
@@ -262,10 +345,15 @@
   border-top: 1px solid var(--border);
 }
 
-.panel-foot .btn--icon { width: 38px; height: 38px; }
+.panel-foot .btn--icon {
+  width: 38px;
+  height: 38px;
+}
 
 /* ================================================================ MOBILE == */
-.day-pills { display: none; }
+.day-pills {
+  display: none;
+}
 
 @media (max-width: 860px) {
   .board {
@@ -275,8 +363,12 @@
     overflow: visible;
   }
 
-  .day { display: none; }
-  .day.is-selected { display: flex; }
+  .day {
+    display: none;
+  }
+  .day.is-selected {
+    display: flex;
+  }
 
   .day-pills {
     display: flex;
@@ -299,7 +391,11 @@
     color: var(--text-secondary);
   }
 
-  .day-pill b { font-size: 15px; font-weight: 650; color: var(--text-primary); }
+  .day-pill b {
+    font-size: 15px;
+    font-weight: 650;
+    color: var(--text-primary);
+  }
 
   .day-pill.is-selected {
     background: var(--accent);
@@ -307,8 +403,15 @@
     color: rgba(255, 255, 255, 0.75);
   }
 
-  .day-pill.is-selected b { color: #fff; }
+  .day-pill.is-selected b {
+    color: #fff;
+  }
 
-  .panel { width: 100%; border-left: 0; }
-  .week-view.panel-open { padding-right: 0; }
+  .panel {
+    width: 100%;
+    border-left: 0;
+  }
+  .week-view.panel-open {
+    padding-right: 0;
+  }
 }

@@ -24,19 +24,13 @@ export function useProjects(): Project[] {
 
 export function useProject(id: string | null | undefined): Project | null {
   const { projects } = useWorkspace();
-  return useMemo(
-    () => (id ? (projects.find((p) => p.id === id) ?? null) : null),
-    [projects, id],
-  );
+  return useMemo(() => (id ? (projects.find((p) => p.id === id) ?? null) : null), [projects, id]);
 }
 
 /** Look a project up by id without subscribing to a single project. */
 export function useProjectLookup(): (id: string | null | undefined) => Project | null {
   const { projects } = useWorkspace();
-  return useCallback(
-    (id) => (id ? (projects.find((p) => p.id === id) ?? null) : null),
-    [projects],
-  );
+  return useCallback((id) => (id ? (projects.find((p) => p.id === id) ?? null) : null), [projects]);
 }
 
 export function useProjectTasks(projectId: string | null | undefined): ProjectTask[] {

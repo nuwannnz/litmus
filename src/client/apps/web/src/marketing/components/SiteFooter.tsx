@@ -18,7 +18,11 @@ export function SiteFooter() {
           <p>The calm home for your week.</p>
           <div className="socials">
             {SOCIALS.map((social) => (
-              <a key={social.label} href={`#${social.label.toLowerCase()}`} aria-label={social.label}>
+              <a
+                key={social.label}
+                href={`#${social.label.toLowerCase()}`}
+                aria-label={social.label}
+              >
                 <Icon name={social.icon} size="sm" />
               </a>
             ))}

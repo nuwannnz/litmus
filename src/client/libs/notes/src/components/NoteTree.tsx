@@ -22,11 +22,7 @@ export function NoteTree({
 
   return (
     <div className="tree" role="tree">
-      {branch.length ? (
-        branch
-      ) : (
-        <p className="muted tree-empty">No notes found.</p>
-      )}
+      {branch.length ? branch : <p className="muted tree-empty">No notes found.</p>}
     </div>
   );
 }

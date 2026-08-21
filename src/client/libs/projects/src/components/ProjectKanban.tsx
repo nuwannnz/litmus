@@ -37,13 +37,7 @@ interface KanbanColumnProps extends Omit<ProjectKanbanProps, 'tasks'> {
   tasks: ProjectTask[];
 }
 
-function KanbanColumn({
-  status,
-  tasks,
-  draggingId,
-  onDragStateChange,
-  onMove,
-}: KanbanColumnProps) {
+function KanbanColumn({ status, tasks, draggingId, onDragStateChange, onMove }: KanbanColumnProps) {
   const { isOver, dropProps } = useDropTarget({
     accept: PROJECT_TASK_DND,
     onDrop: (taskId) => onMove(taskId, status),

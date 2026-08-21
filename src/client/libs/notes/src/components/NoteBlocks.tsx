@@ -13,12 +13,7 @@ export interface NoteBlocksProps {
  * Renders a parsed note body. Prose is editable HTML; checklists and callouts
  * are components so their controls stay interactive.
  */
-export function NoteBlocks({
-  blocks,
-  onEditHtml,
-  onToggleCheck,
-  onOpenNote,
-}: NoteBlocksProps) {
+export function NoteBlocks({ blocks, onEditHtml, onToggleCheck, onOpenNote }: NoteBlocksProps) {
   const followNoteLink = (e: MouseEvent<HTMLDivElement>) => {
     const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[data-note]');
     if (!link) return;
@@ -32,21 +27,14 @@ export function NoteBlocks({
       {blocks.map((block, index) => {
         if (block.kind === 'html') {
           return (
-            <HtmlBlock
-              key={index}
-              html={block.raw}
-              onCommit={(html) => onEditHtml(index, html)}
-            />
+            <HtmlBlock key={index} html={block.raw} onCommit={(html) => onEditHtml(index, html)} />
           );
         }
         if (block.kind === 'checklist') {
           return (
             <div key={index} className="checklist">
               {block.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={`note-check ${item.done ? 'is-done' : ''}`}
-                >
+                <div key={itemIndex} className={`note-check ${item.done ? 'is-done' : ''}`}>
                   <Checkbox
                     checked={item.done}
                     label={item.label}
