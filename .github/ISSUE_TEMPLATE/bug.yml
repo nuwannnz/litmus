@@ -1,0 +1,87 @@
+name: Bug
+description: Something built already doesn't behave as specified.
+title: "bug: "
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A bug is a defect in scope already shipped or in progress. It gets no story ID and does not
+        appear in [`docs/epics.md`](https://github.com/nuwannnz/litmus/blob/develop/docs/epics.md) —
+        if every defect became a story the plan would turn into a work log and stop being a plan.
+
+        If the behaviour is *unspecified* rather than wrong, that's a PRD gap: say so below, and the
+        fix starts in `docs/prd.md`.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: Include the exact copy, error or console output where there is one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+      description: Quote the FR or PRD section if one covers it — that turns the report into a test name.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Week Board
+        - Task Detail
+        - Projects dashboard
+        - Project Detail
+        - Shell / Settings
+        - Auth
+        - Sync / offline
+        - Database / migrations
+        - CI / deploy
+        - Other
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Environment
+      options:
+        - local
+        - dev
+        - production
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The Settings → About row (FR-38) — version, short SHA and build date.
+      placeholder: Litmus 0.4.2 · a1b2c3d · 2026-08-21
+
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme and width, if it's visual
+      options:
+        - Not visual
+        - Light, desktop
+        - Dark, desktop
+        - Light, mobile
+        - Dark, mobile
+        - Both themes

@@ -55,6 +55,37 @@ and its version bumps. When its *detail* or *state* changes, only the issue move
 - **Sizes** are **S** ≈ half a day, **M** ≈ 1–2 days, **L** ≈ 3+ days, at hobby-project
   pace.
 
+### 1.2 Adding a story later
+
+The 96 stories below were created in one pass. Everything after that arrives one at a time,
+through the **Story** issue template (`.github/ISSUE_TEMPLATE/story.yml`), which asks for
+the same fields those 96 carry so a hand-written story comes out shaped like a generated
+one.
+
+**Three sources, three paths:**
+
+| Source | Path | Touches this file? |
+|---|---|---|
+| A §7 decision resolving into work | New story in the owning epic | Yes — new row, MINOR bump |
+| v2 scope (Notes, export) | A new epic, planned as a batch | Yes — new epic section |
+| A defect found while building | **Bug** template, `type:bug`, no story ID | No |
+| Housekeeping no epic claims | Blank issue, `type:chore`, no story ID | No |
+
+The last two matter more than they look. **A story is planned scope; a bug is a defect in
+scope already shipped or in progress.** If every discovered defect became a story, this
+file would turn into a work log and stop being a plan.
+
+**ID allocation follows the PRD's rule for FRs, for the same reason:** take the **next free
+number in the epic**, never renumber, never reuse. S-6.9 goes at the end of EP-6 whether or
+not it belongs in the middle logically — IDs are referenced from commits, PR bodies, test
+names and issue titles, and stability is worth more than tidiness. A withdrawn story's
+number is retired with it.
+
+**Two things deliberately not done:** no committed generator script (it would drift from
+the issues it created, and inviting bulk regeneration would orphan every existing issue
+number), and no automatic sync in either direction between this file and the issues. The
+split works precisely because each side owns something the other doesn't.
+
 ## 2. Where the work actually starts
 
 This is not greenfield, and mis-reading the starting line is the fastest way to mis-size
@@ -497,4 +528,4 @@ though CLAUDE.md's mandatory bump rule names only those two.*
 
 | Version | Date | Change |
 |---|---|---|
-| 1.0.0 | 2026-08-21 | Initial delivery plan. 13 epics, 96 stories (issues [#3](https://github.com/nuwannnz/litmus/issues/3)–[#98](https://github.com/nuwannnz/litmus/issues/98)), six milestones from `0.1.0` to `1.0.0`, traceability across FR-1…FR-39, and nine decisions blocking specific stories. Written against `prd.md` 2.0.0 and `architecture.md` 1.0.1. |
+| 1.0.0 | 2026-08-21 | Initial delivery plan. 13 epics, 96 stories (issues [#3](https://github.com/nuwannnz/litmus/issues/3)–[#98](https://github.com/nuwannnz/litmus/issues/98)), six milestones from `0.1.0` to `1.0.0`, traceability across FR-1…FR-39, and nine decisions blocking specific stories. §1.2 sets the rules for adding stories after this pass, backed by the Story and Bug issue templates. Written against `prd.md` 2.0.0 and `architecture.md` 1.0.1. |

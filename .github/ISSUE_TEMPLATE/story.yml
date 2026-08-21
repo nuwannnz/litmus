@@ -1,0 +1,120 @@
+name: Story
+description: A slice of planned scope, belonging to an epic in docs/epics.md.
+title: "S-"
+labels: ["story"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A **story** is planned scope: one feature branch, one PR, one row in
+        [`docs/epics.md`](https://github.com/nuwannnz/litmus/blob/develop/docs/epics.md).
+        Something broken is a **Bug**; a piece of housekeeping that no epic claims is a plain issue —
+        neither is a story, and neither belongs in `epics.md`.
+
+        After creating this, set the `epic:*` and `size:*` labels and the milestone by hand —
+        issue forms can't do it.
+
+  - type: input
+    id: story-id
+    attributes:
+      label: Story ID
+      description: >
+        The next free number in the epic — never renumber, never reuse. S-6.9 goes at the end of
+        EP-6 whether or not it belongs in the middle logically. IDs are referenced from commits,
+        PR bodies, test names and this issue's title, and stability beats tidiness.
+      placeholder: S-6.9
+    validations:
+      required: true
+
+  - type: dropdown
+    id: epic
+    attributes:
+      label: Epic
+      options:
+        - EP-1 Delivery foundations
+        - EP-2 Data foundation — schema, RLS, pgTAP
+        - EP-3 Data layer — libs/api and the unified task
+        - EP-4 Account and authentication
+        - EP-5 Shell, theming and Settings
+        - EP-6 Week Board
+        - EP-7 Task Detail
+        - EP-8 Projects dashboard
+        - EP-9 Project Detail
+        - EP-10 Cross-surface invariants
+        - EP-11 Sync — offline and realtime
+        - EP-12 Hardening — a11y, security, performance, E2E
+        - EP-13 Environments and release
+        - "A new epic (say which in Notes)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      description: S ≈ half a day · M ≈ 1–2 days · L ≈ 3+ days. A story too big for one PR is two stories.
+      options:
+        - S
+        - M
+        - L
+    validations:
+      required: true
+
+  - type: input
+    id: realises
+    attributes:
+      label: Realises
+      description: >
+        The FR IDs this story delivers, from `docs/prd.md`. Leave blank only for scaffolding
+        work that no requirement names — and if that happens often, the PRD is drifting.
+      placeholder: FR-11, FR-39
+
+  - type: input
+    id: depends-on
+    attributes:
+      label: Depends on
+      description: Story IDs that must land first.
+      placeholder: S-6.3, S-10.4
+
+  - type: input
+    id: architecture
+    attributes:
+      label: Architecture reference
+      description: The section of `docs/architecture.md` this implements.
+      placeholder: "§3.1, §5.2"
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences. What this is, and the design frame or journey it serves.
+      placeholder: Frame `tqz8m`. Realizes UJ-3, UJ-5.
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: >
+        One bullet per testable consequence. Where the PRD already states them under
+        "Consequences (testable)", lift them verbatim — they were written for exactly this.
+      value: |
+        -
+        -
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: What this blocks, what it's blocked by, decisions still owed, anything the next person needs.
+
+  - type: checkboxes
+    id: doc
+    attributes:
+      label: Plan of record
+      options:
+        - label: >
+            This story is, or will be, a row in `docs/epics.md` under its epic — with the
+            document version bumped (MINOR for added scope, MAJOR when scope is withdrawn).
+          required: true
