@@ -11,6 +11,7 @@
     "dev": "nx serve @litmus/web",
     "build": "nx build @litmus/web",
     "preview": "nx preview @litmus/web",
+    "test": "nx run-many -t test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "graph": "nx graph"
   },
@@ -21,7 +22,8 @@
     "@nx/vite": "^21.3.0",
     "nx": "^21.3.0",
     "typescript": "^5.9.2",
-    "vite": "^7.0.6"
+    "vite": "^7.0.6",
+    "vitest": "^3.0.0"
   },
   "dependencies": {
     "react": "^19.1.1",
