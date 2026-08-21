@@ -1,0 +1,59 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+# Releases must not race. Unlike CI, a superseded run here is not harmless —
+# it may have already tagged and cut a GitHub release — so runs queue rather
+# than cancel.
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
+
+# Exactly what the action needs: commit the version bump and CHANGELOG, create
+# the tag and GitHub release (contents), and open/update the release PR
+# (pull-requests). Nothing else.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Release PR and tag
+    runs-on: ubuntu-latest
+
+    steps:
+      # release-please proposes; it never bumps by side effect. On each push to
+      # main it opens (or refreshes) a release PR containing the version bump
+      # and the CHANGELOG entry, derived from the conventional commits since the
+      # last tag. That PR goes through review like any other — which is what
+      # CLAUDE.md's "PRs only, one approval" requires. Merging it is what tags.
+      #
+      # Two things a future reader will trip over:
+      #
+      # 1. The bump commit and CHANGELOG.md land on `main` ONLY. `develop` does
+      #    not see them until `main` is back-merged into `develop` — do that
+      #    immediately after every release (CLAUDE.md "Branching and
+      #    environments"; docs/architecture.md §6.1). Skip it and `develop`
+      #    drifts behind, and the next release PR carries a diff that reverts
+      #    the changelog.
+      #
+      # 2. The versioned file is `src/client/apps/web/package.json`, not the
+      #    workspace root. That app's `version` is the single source of truth
+      #    for the number FR-38 shows in Settings — Vite `define`s it into the
+      #    bundle at build time (docs/architecture.md §8.1, §8.2). The root and
+      #    `libs/*` package versions are private, never published, and stay at
+      #    0.0.1 on purpose. Release-please cannot target that package directly
+      #    (its CHANGELOG would then be buried four directories deep), so the
+      #    component is the repo root and the app's package.json is bumped as an
+      #    `extra-files` entry. See release-please-config.json.
+      #
+      # Uses the default GITHUB_TOKEN. Consequence: the release PR is opened by
+      # github-actions[bot], and GitHub does not fire workflow events for its
+      # own token — so ci.yml will not run on the release PR. Swap in a PAT here
+      # if that ever needs to change.
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
