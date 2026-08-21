@@ -42,6 +42,11 @@ read it as intent, not as a description of the code.
   implementation.
 - **App code**: `src/client/`, an Nx + npm-workspaces monorepo. See
   `src/client/CLAUDE.md`.
+- **Local backend**: `supabase/` — `config.toml` for the local stack, and in time
+  `migrations/`, `seed.sql` and pgTAP `tests/`. `supabase start` brings up
+  Postgres and auth; the ports and the caveats are in `src/client/CLAUDE.md`.
+  `supabase/functions/` stays empty — no Edge Functions in v1
+  (`docs/architecture.md` §4.4).
 - **New planning docs** (architecture decisions, ADRs, further specs) belong
   in `docs/`, alongside the PRD — don't scatter them elsewhere in the repo.
 

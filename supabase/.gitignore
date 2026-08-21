@@ -1,0 +1,11 @@
+# Local-only CLI artefacts. Everything else under supabase/ is source and stays tracked:
+# config.toml, migrations/*.sql, seed.sql and tests/*.sql (architecture §3.4, §6.2, §9).
+
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
