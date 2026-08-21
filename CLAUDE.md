@@ -28,6 +28,10 @@ read it as intent, not as a description of the code.
 - **Architecture**: `docs/architecture.md` — stack decisions, data model,
   environments, branching, CI/CD, versioning. Status is `proposed`: none of it
   is implemented yet.
+- **Delivery plan**: `docs/epics.md` — 13 epics, 96 stories and six milestones
+  from today to `1.0.0`, traced to FR IDs. It holds the *shape* of the work;
+  each story's acceptance criteria live in its GitHub issue (titled by story
+  ID, e.g. `S-6.3 …`), and status lives on the issue, never in the file.
 - **Design source**: `docs/ui-design.pen`, ~1.5 MB of JSON. Never read it
   whole — look up a screen by its ID (cited in `prd.md`), e.g.
   `grep -n '"id": "A8V5X"' docs/ui-design.pen`. Prefer the `pencil` MCP tools
