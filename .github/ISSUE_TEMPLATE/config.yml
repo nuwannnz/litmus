@@ -1,0 +1,13 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Chore
+    url: https://github.com/nuwannnz/litmus/issues/new
+    about: >
+      Housekeeping no epic claims — a dependency bump, a tidy-up, a spike. Open a blank issue and
+      label it type:chore. It is not a story and does not belong in docs/epics.md.
+  - name: The delivery plan
+    url: https://github.com/nuwannnz/litmus/blob/develop/docs/epics.md
+    about: Epics, sequence, milestones, and the decisions still owed before certain stories can start.
+  - name: Product requirements
+    url: https://github.com/nuwannnz/litmus/blob/develop/docs/prd.md
+    about: FR-1…FR-39, journeys and the glossary. When the docs disagree, this one wins.
