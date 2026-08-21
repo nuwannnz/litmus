@@ -1,6 +1,6 @@
 ---
 title: Architecture — Litmus
-version: 1.0.0
+version: 1.0.1
 status: proposed
 created: 2026-08-21
 updated: 2026-08-21
@@ -634,7 +634,7 @@ be computed rather than remembered.
 
 **release-please**, run as a GitHub Action on `main`. It reads conventional commits since the last
 tag, opens a **release PR** that bumps `apps/web/package.json` and updates `CHANGELOG.md`, and tags
-on merge. This fits CLAUDE.md's "PRs only, one approval" exactly — the release itself is a reviewed
+on merge. This fits CLAUDE.md's "PRs only, one approval required" exactly — the release itself is a reviewed
 PR, and nothing bumps a version by side effect. Remember the back-merge that follows it (§6.1).
 
 - `fix:` → patch · `feat:` → minor · `feat!:` / `BREAKING CHANGE:` → major
@@ -679,12 +679,14 @@ incompatible caches instead of deserialising them into a crash (§5.2).
 ## 9. Repository layout
 
 ```
-CLAUDE.md / AGENTS.md       repo-wide: what this is, where things live, policy
+CLAUDE.md                   repo-wide: what this is, where things live, policy
+AGENTS.md                   pointer to CLAUDE.md
 docs/                       prd.md, prd-addendum.md, architecture.md (this)
 supabase/                   config.toml, migrations/*.sql, seed.sql, tests/*.sql (pgTAP)
   functions/                empty in v1 — see §4.4
 src/client/
-  CLAUDE.md / AGENTS.md     workspace-specific: commands, Nx layout, module contract
+  CLAUDE.md                 workspace-specific: commands, Nx layout, module contract
+  AGENTS.md                 pointer to the CLAUDE.md beside it
   apps/web/                 package.json version = the app version (§8)
   apps/web-e2e/             ← new: Playwright
   libs/api/                 ← new: supabase client, generated types, query hooks
@@ -692,10 +694,15 @@ src/client/
 .github/workflows/          ci.yml, deploy-dev.yml, deploy-prod.yml, release-please.yml
 ```
 
-The agent-instruction files are **nested deliberately**: the root pair carries what is true of the
-whole repository, and `src/client/`'s pair carries the Nx workspace detail, loaded only when working
-in there. Splitting them keeps the root file about the project rather than about one of its
-directories (§6.3 of `CLAUDE.md` records the rule).
+The agent-instruction files are **nested deliberately**: the root file carries what is true of the
+whole repository, and `src/client/`'s carries the Nx workspace detail, loaded only when working in
+there. Splitting them keeps the root file about the project rather than about one of its
+directories.
+
+`AGENTS.md` at each level is a **pointer to the `CLAUDE.md` beside it**, not a second copy. The two
+were byte-identical below their headers, which is four files to keep in sync and a guarantee of
+drift — the first edit that lands in one and not the other leaves two documents both claiming to be
+authoritative, with no way to tell which is stale.
 
 ---
 
@@ -763,6 +770,7 @@ Still open, with what this architecture contributes:
 
 | Version | Date | Change |
 |---|---|---|
+| 1.0.1 | 2026-08-21 | Patch — §9 only. `AGENTS.md` collapsed to a pointer at both levels; repository layout and the note beneath it updated to match. No decision changed. |
 | 1.0.0 | 2026-08-21 | Initial architecture. Supabase over AWS; TypeScript end to end with no hand-written backend; PostgREST + RLS; Cloudflare Pages; TanStack Query with offline persistence; Vitest, pgTAP and Playwright; local/dev/prod on `feature → develop → main`; GitHub Actions for CI/CD; release-please for versioning. |
 
 *Drafts preceding 1.0.0 are in git history (a C# API on Fly.io, later dropped; a trunk-based
