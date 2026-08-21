@@ -92,3 +92,16 @@ CI/CD is GitHub Actions — `ci.yml` on every PR, `deploy-dev.yml` on `develop`,
 - Never push to `main` or `develop` directly — PRs only, one approval required.
 - Bump the document version whenever `docs/prd.md` or `docs/architecture.md`
   changes (see above).
+- **Commit as the personal identity only** — `Nuwan Karunarathna
+  <nuwankarunarathna504@gmail.com>` (GitHub `nuwannnz`, who owns the repo).
+  The machine's *global* git identity is a work account, so this repo relies on
+  a local `user.email` override that a fresh clone would not have. Check it
+  before the first commit in a new clone:
+
+  ```bash
+  git config --local user.name  "Nuwan Karunarathna"
+  git config --local user.email "nuwankarunarathna504@gmail.com"
+  ```
+
+  CI fails any commit carrying the work identity. Keep `gh auth` on `nuwannnz`
+  too — the other logged-in account is read-only here.
