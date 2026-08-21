@@ -17,9 +17,7 @@ export function CommandPalette({ onClose }: CommandPaletteProps) {
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const matched = q
-      ? commands.filter((c) => c.label.toLowerCase().includes(q))
-      : commands;
+    const matched = q ? commands.filter((c) => c.label.toLowerCase().includes(q)) : commands;
     return matched.slice(0, MAX_RESULTS);
   }, [commands, query]);
 
@@ -28,9 +26,7 @@ export function CommandPalette({ onClose }: CommandPaletteProps) {
   useEffect(() => setIndex(0), [query]);
 
   useEffect(() => {
-    listRef.current
-      ?.querySelector('.palette-item.is-active')
-      ?.scrollIntoView({ block: 'nearest' });
+    listRef.current?.querySelector('.palette-item.is-active')?.scrollIntoView({ block: 'nearest' });
   }, [active]);
 
   const run = (command: Command | undefined) => {

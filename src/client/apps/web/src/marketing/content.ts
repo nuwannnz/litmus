@@ -40,8 +40,16 @@ export interface Feature {
 }
 
 export const FEATURES: Feature[] = [
-  { icon: 'moon', title: 'Dark mode', body: "A calm dark theme that's easy on the eyes, day or night." },
-  { icon: 'bolt', title: 'Fast & light', body: 'Instant load, keyboard-first, and buttery drag-and-drop.' },
+  {
+    icon: 'moon',
+    title: 'Dark mode',
+    body: "A calm dark theme that's easy on the eyes, day or night.",
+  },
+  {
+    icon: 'bolt',
+    title: 'Fast & light',
+    body: 'Instant load, keyboard-first, and buttery drag-and-drop.',
+  },
   {
     icon: 'link',
     title: 'Everything links',
@@ -57,7 +65,11 @@ export const FEATURES: Feature[] = [
     title: 'Web & mobile',
     body: 'A layout tuned for desktop and a focused view on your phone.',
   },
-  { icon: 'lock', title: 'Your data, yours', body: 'Private by default. Export anytime, no lock-in.' },
+  {
+    icon: 'lock',
+    title: 'Your data, yours',
+    body: 'Private by default. Export anytime, no lock-in.',
+  },
 ];
 
 export interface PreviewColumn {
@@ -101,7 +113,12 @@ export const PREVIEW_COLUMNS: PreviewColumn[] = [
     name: 'Fri',
     num: 14,
     cards: [
-      { title: 'Sprint retro & planning', category: 'Meeting', color: 'yellow', meta: '3:00 PM · 0/4' },
+      {
+        title: 'Sprint retro & planning',
+        category: 'Meeting',
+        color: 'yellow',
+        meta: '3:00 PM · 0/4',
+      },
     ],
   },
 ];

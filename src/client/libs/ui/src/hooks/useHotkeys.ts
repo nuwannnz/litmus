@@ -4,10 +4,7 @@ export type Hotkeys = Record<string, (e: KeyboardEvent) => void>;
 
 const isTypingTarget = (target: EventTarget | null): boolean => {
   if (!(target instanceof HTMLElement)) return false;
-  return (
-    target.isContentEditable ||
-    ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
-  );
+  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
 };
 
 /**

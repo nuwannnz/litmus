@@ -1,14 +1,30 @@
 import type { WeekDay } from '../types';
 
 export const MONTHS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 export const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export const DAY_LONG = [
-  'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
 ];
 
 const at = <T>(list: readonly T[], index: number): T => list[index] as T;
@@ -50,8 +66,6 @@ export function formatWeekLabel(days: WeekDay[]): string {
   const b = parseIso(last.iso);
   const left = `${at(MONTHS, a.getMonth())} ${a.getDate()}`;
   const right =
-    a.getMonth() === b.getMonth()
-      ? `${b.getDate()}`
-      : `${at(MONTHS, b.getMonth())} ${b.getDate()}`;
+    a.getMonth() === b.getMonth() ? `${b.getDate()}` : `${at(MONTHS, b.getMonth())} ${b.getDate()}`;
   return `${left} – ${right}, ${b.getFullYear()}`;
 }

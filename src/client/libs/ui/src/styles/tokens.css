@@ -62,8 +62,8 @@
   --panel-w: 468px;
 
   /* --- Type ----------------------------------------------------------- */
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "SFMono-Regular", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'SFMono-Regular', 'JetBrains Mono', ui-monospace, Menlo, monospace;
 
   /* --- Motion --------------------------------------------------------- */
   --ease: cubic-bezier(0.32, 0.72, 0.3, 1);
@@ -71,7 +71,7 @@
   --base: 200ms;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg: #15151b;
   --surface: #1f1f28;
   --surface-sunken: #1a1a21;
@@ -103,9 +103,27 @@
 
 /* Accent colour families, addressed by name from markup:
    <span class="dot" data-color="mint"> etc. */
-[data-color="lav"]    { --c-soft: var(--pastel-lav);    --c-solid: var(--dot-lav); }
-[data-color="mint"]   { --c-soft: var(--pastel-mint);   --c-solid: var(--dot-mint); }
-[data-color="peach"]  { --c-soft: var(--pastel-peach);  --c-solid: var(--dot-peach); }
-[data-color="blue"]   { --c-soft: var(--pastel-blue);   --c-solid: var(--dot-blue); }
-[data-color="yellow"] { --c-soft: var(--pastel-yellow); --c-solid: var(--dot-yellow); }
-[data-color="pink"]   { --c-soft: var(--pastel-pink);   --c-solid: var(--dot-pink); }
+[data-color='lav'] {
+  --c-soft: var(--pastel-lav);
+  --c-solid: var(--dot-lav);
+}
+[data-color='mint'] {
+  --c-soft: var(--pastel-mint);
+  --c-solid: var(--dot-mint);
+}
+[data-color='peach'] {
+  --c-soft: var(--pastel-peach);
+  --c-solid: var(--dot-peach);
+}
+[data-color='blue'] {
+  --c-soft: var(--pastel-blue);
+  --c-solid: var(--dot-blue);
+}
+[data-color='yellow'] {
+  --c-soft: var(--pastel-yellow);
+  --c-solid: var(--dot-yellow);
+}
+[data-color='pink'] {
+  --c-soft: var(--pastel-pink);
+  --c-solid: var(--dot-pink);
+}

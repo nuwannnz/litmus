@@ -31,7 +31,12 @@ export function Checkbox({ checked, onToggle, label, className }: CheckboxProps)
 /** Non-interactive tick box, for previews and read-only lists. */
 export function CheckMark({ checked }: { checked: boolean }) {
   return (
-    <span className="check" aria-checked={checked} role="img" aria-label={checked ? 'Done' : 'Not done'}>
+    <span
+      className="check"
+      aria-checked={checked}
+      role="img"
+      aria-label={checked ? 'Done' : 'Not done'}
+    >
       <Icon name="check" />
     </span>
   );

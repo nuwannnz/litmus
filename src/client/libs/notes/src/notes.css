@@ -24,10 +24,20 @@
   padding: 20px 18px 12px;
 }
 
-.notes-side-head h2 { font-size: 16px; font-weight: 650; flex: 1; }
-.notes-side .search { margin: 0 16px 10px; }
+.notes-side-head h2 {
+  font-size: 16px;
+  font-weight: 650;
+  flex: 1;
+}
+.notes-side .search {
+  margin: 0 16px 10px;
+}
 
-.tree { flex: 1; overflow-y: auto; padding: 4px 10px 20px; }
+.tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 10px 20px;
+}
 
 .tree-row {
   display: flex;
@@ -42,12 +52,25 @@
   transition: background var(--fast) var(--ease);
 }
 
-.tree-row:hover { background: var(--surface-sunken); }
-.tree-row .icon { color: var(--text-muted); }
-.tree-row .caret { transition: transform var(--fast) var(--ease); }
-.tree-row.is-open .caret { transform: rotate(90deg); }
-.tree-row.is-folder { font-weight: 600; }
-.tree-row .tree-indent { width: 14px; flex-shrink: 0; }
+.tree-row:hover {
+  background: var(--surface-sunken);
+}
+.tree-row .icon {
+  color: var(--text-muted);
+}
+.tree-row .caret {
+  transition: transform var(--fast) var(--ease);
+}
+.tree-row.is-open .caret {
+  transform: rotate(90deg);
+}
+.tree-row.is-folder {
+  font-weight: 600;
+}
+.tree-row .tree-indent {
+  width: 14px;
+  flex-shrink: 0;
+}
 
 .tree-row.is-active {
   background: var(--accent-soft);
@@ -55,12 +78,24 @@
   font-weight: 600;
 }
 
-.tree-row.is-active .icon { color: var(--accent); }
-.tree-children { padding-left: 14px; }
-.tree-empty { padding: 12px; font-size: 12.5px; }
+.tree-row.is-active .icon {
+  color: var(--accent);
+}
+.tree-children {
+  padding-left: 14px;
+}
+.tree-empty {
+  padding: 12px;
+  font-size: 12.5px;
+}
 
 /* ------------------------------------------------------------ note editor */
-.editor { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.editor {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
 
 .editor-bar {
   display: flex;
@@ -71,11 +106,25 @@
   flex-shrink: 0;
 }
 
-.editor-bar .crumbs { margin: 0; flex: 1; min-width: 0; }
-.editor-bar .edited { font-size: 11.5px; }
+.editor-bar .crumbs {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.editor-bar .edited {
+  font-size: 11.5px;
+}
 
-.editor-scroll { flex: 1; overflow-y: auto; padding: 40px 0 80px; }
-.doc { max-width: 680px; margin: 0 auto; padding: 0 32px; }
+.editor-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 0 80px;
+}
+.doc {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
 
 .doc h1 {
   font-size: 32px;
@@ -85,10 +134,20 @@
   border-radius: 6px;
 }
 
-.doc h1:focus { outline: 2px solid var(--accent); }
+.doc h1:focus {
+  outline: 2px solid var(--accent);
+}
 
-.doc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.doc-meta .muted { font-size: 12px; }
+.doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.doc-meta .muted {
+  font-size: 12px;
+}
 
 .doc-tags {
   display: flex;
@@ -100,20 +159,56 @@
   color: var(--text-muted);
 }
 
-.link-chip { color: var(--accent); font-weight: 600; }
+.link-chip {
+  color: var(--accent);
+  font-weight: 600;
+}
 
-.note-body { font-size: 14.5px; line-height: 1.75; color: var(--text-primary); }
-.note-body:focus { outline: none; }
-.note-body > * + * { margin-top: 16px; }
-.note-body p { color: var(--text-secondary); }
-.note-body h2 { font-size: 19px; font-weight: 650; letter-spacing: -0.015em; margin-top: 28px; }
-.note-body ul, .note-body ol { padding-left: 22px; color: var(--text-secondary); }
-.note-body ul { list-style: disc; }
-.note-body ol { list-style: decimal; }
-.note-body li { margin: 5px 0; }
-.note-body li::marker { color: var(--dot-lav); }
-.note-body strong { color: var(--text-primary); font-weight: 650; }
-.note-body a { color: var(--accent); font-weight: 550; }
+.note-body {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+.note-body:focus {
+  outline: none;
+}
+.note-body > * + * {
+  margin-top: 16px;
+}
+.note-body p {
+  color: var(--text-secondary);
+}
+.note-body h2 {
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  margin-top: 28px;
+}
+.note-body ul,
+.note-body ol {
+  padding-left: 22px;
+  color: var(--text-secondary);
+}
+.note-body ul {
+  list-style: disc;
+}
+.note-body ol {
+  list-style: decimal;
+}
+.note-body li {
+  margin: 5px 0;
+}
+.note-body li::marker {
+  color: var(--dot-lav);
+}
+.note-body strong {
+  color: var(--text-primary);
+  font-weight: 650;
+}
+.note-body a {
+  color: var(--accent);
+  font-weight: 550;
+}
 
 .note-body pre {
   padding: 16px 18px;
@@ -126,9 +221,13 @@
   overflow-x: auto;
 }
 
-.note-blocks > * + * { margin-top: 16px; }
+.note-blocks > * + * {
+  margin-top: 16px;
+}
 /* Prose inside one editable block still needs its own rhythm. */
-.note-blocks > [contenteditable] > * + * { margin-top: 16px; }
+.note-blocks > [contenteditable] > * + * {
+  margin-top: 16px;
+}
 
 .callout {
   display: flex;
@@ -138,11 +237,26 @@
   background: var(--pastel-blue);
 }
 
-.callout .icon { color: var(--accent); margin-top: 2px; }
-.callout b { display: block; font-size: 12.5px; margin-bottom: 3px; }
-.callout p { font-size: 12.5px; line-height: 1.6; color: var(--text-primary); opacity: 0.75; }
+.callout .icon {
+  color: var(--accent);
+  margin-top: 2px;
+}
+.callout b {
+  display: block;
+  font-size: 12.5px;
+  margin-bottom: 3px;
+}
+.callout p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  opacity: 0.75;
+}
 
-.checklist { display: flex; flex-direction: column; }
+.checklist {
+  display: flex;
+  flex-direction: column;
+}
 
 .note-check {
   display: flex;
@@ -152,7 +266,10 @@
   font-size: 14px;
 }
 
-.note-check.is-done span { color: var(--text-secondary); text-decoration: line-through; }
+.note-check.is-done span {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
 
 .format-bar {
   position: fixed;
@@ -176,15 +293,36 @@
   color: var(--text-secondary);
 }
 
-.format-bar button:hover { background: var(--surface-sunken); color: var(--text-primary); }
-.format-bar .sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+.format-bar button:hover {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+.format-bar .sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
 
 /* ================================================================ MOBILE == */
 @media (max-width: 860px) {
-  .notes { grid-template-columns: 1fr; }
-  .notes-side { display: none; border-right: 0; }
-  .notes.show-list .notes-side { display: flex; }
-  .notes.show-list .editor { display: none; }
-  .doc { padding: 0 20px; }
-  .editor-scroll { padding-top: 24px; }
+  .notes {
+    grid-template-columns: 1fr;
+  }
+  .notes-side {
+    display: none;
+    border-right: 0;
+  }
+  .notes.show-list .notes-side {
+    display: flex;
+  }
+  .notes.show-list .editor {
+    display: none;
+  }
+  .doc {
+    padding: 0 20px;
+  }
+  .editor-scroll {
+    padding-top: 24px;
+  }
 }

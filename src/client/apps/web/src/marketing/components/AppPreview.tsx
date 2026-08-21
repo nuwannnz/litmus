@@ -22,10 +22,7 @@ export function AppPreview() {
         </div>
         <div className="preview-board">
           {PREVIEW_COLUMNS.map((column) => (
-            <div
-              key={column.name}
-              className={`preview-col ${column.isToday ? 'is-today' : ''}`}
-            >
+            <div key={column.name} className={`preview-col ${column.isToday ? 'is-today' : ''}`}>
               <header>
                 {column.name} <span>{column.num}</span>
               </header>

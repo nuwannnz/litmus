@@ -10,13 +10,7 @@ export interface PreviewTaskCardProps {
 }
 
 /** The little static task card used in marketing and auth artwork. */
-export function PreviewTaskCard({
-  title,
-  category,
-  color,
-  meta,
-  className,
-}: PreviewTaskCardProps) {
+export function PreviewTaskCard({ title, category, color, meta, className }: PreviewTaskCardProps) {
   return (
     <div className={className}>
       <b>{title}</b>

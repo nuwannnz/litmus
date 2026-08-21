@@ -1,11 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import {
-  appPaths,
-  useRegisterCommands,
-  type AppModule,
-  type Command,
-} from '@litmus/core';
+import { appPaths, useRegisterCommands, type AppModule, type Command } from '@litmus/core';
 import { useHotkeys, useTheme, useToast } from '@litmus/ui';
 import { Rail } from './Rail';
 import { CommandPalette } from './CommandPalette';
@@ -34,9 +29,7 @@ export function AppShell({ modules }: AppShellProps) {
       </main>
 
       <ShellCommands modules={modules} />
-      {modules.map((module) =>
-        module.Bridge ? <module.Bridge key={module.id} /> : null,
-      )}
+      {modules.map((module) => (module.Bridge ? <module.Bridge key={module.id} /> : null))}
 
       {paletteOpen && <CommandPalette onClose={() => setPaletteOpen(false)} />}
     </div>
@@ -70,10 +63,7 @@ function ShellCommands({ modules }: { modules: AppModule[] }) {
   // 1 / 2 / 3 jump straight to a module, in rail order.
   useHotkeys(
     Object.fromEntries(
-      modules.map((module, i) => [
-        String(i + 1),
-        () => navigate(`${appPaths.app}/${module.path}`),
-      ]),
+      modules.map((module, i) => [String(i + 1), () => navigate(`${appPaths.app}/${module.path}`)]),
     ),
   );
 

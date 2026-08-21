@@ -33,9 +33,18 @@
   color: var(--text-secondary);
 }
 
-.topbar-lead { min-width: 0; }
-.topbar-tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.topbar-tools .search { width: 220px; }
+.topbar-lead {
+  min-width: 0;
+}
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.topbar-tools .search {
+  width: 220px;
+}
 
 /* ------------------------------------------------------------- prev / next */
 .stepper {
@@ -55,8 +64,13 @@
   color: var(--text-secondary);
 }
 
-.stepper button:hover { background: var(--surface-sunken); color: var(--text-primary); }
-.stepper button + button { border-left: 1px solid var(--border); }
+.stepper button:hover {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+.stepper button + button {
+  border-left: 1px solid var(--border);
+}
 
 /* ------------------------------------------------------------- count pill */
 .count-pill {
@@ -72,7 +86,9 @@
   font-weight: 600;
 }
 
-[data-theme="dark"] .count-pill { background: var(--border); }
+[data-theme='dark'] .count-pill {
+  background: var(--border);
+}
 
 /* -------------------------------------------------------------- task card */
 .task {
@@ -87,22 +103,38 @@
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-xs);
   cursor: grab;
-  transition: box-shadow var(--fast) var(--ease), transform var(--fast) var(--ease),
+  transition:
+    box-shadow var(--fast) var(--ease),
+    transform var(--fast) var(--ease),
     opacity var(--fast) var(--ease);
 }
 
-.task:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.task:active { cursor: grabbing; }
-.task.is-dragging { opacity: 0.4; }
+.task:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.task:active {
+  cursor: grabbing;
+}
+.task.is-dragging {
+  opacity: 0.4;
+}
 
 .task.is-selected {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
 }
 
-.task.is-done .task-title { color: var(--text-secondary); text-decoration: line-through; }
+.task.is-done .task-title {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
 
-.task-top { display: flex; align-items: flex-start; gap: 8px; }
+.task-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
 
 .task-title {
   flex: 1;
@@ -138,7 +170,12 @@
   color: var(--text-secondary);
 }
 
-.task-meta span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.task-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
 
 /* ------------------------------------------------------------ breadcrumbs */
 .crumbs {
@@ -150,8 +187,13 @@
   margin-bottom: 4px;
 }
 
-.crumbs b { color: var(--text-primary); font-weight: 600; }
-.crumbs button:hover { color: var(--accent); }
+.crumbs b {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.crumbs button:hover {
+  color: var(--accent);
+}
 
 /* ------------------------------------------------------------ group heads */
 .group-head {
@@ -175,9 +217,18 @@
   transition: background var(--fast) var(--ease);
 }
 
-.linked-note:hover { background: var(--surface-sunken); }
-.linked-note .t { display: block; font-size: 12.5px; font-weight: 600; }
-.linked-note .s { font-size: 11px; color: var(--text-muted); }
+.linked-note:hover {
+  background: var(--surface-sunken);
+}
+.linked-note .t {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.linked-note .s {
+  font-size: 11px;
+  color: var(--text-muted);
+}
 
 /* ------------------------------------------------------------------- hint */
 .hint {
@@ -208,7 +259,9 @@
   font-weight: 600;
 }
 
-.dashed:hover { background: var(--accent-soft); }
+.dashed:hover {
+  background: var(--accent-soft);
+}
 
 /* --------------------------------------------------------------- pickers */
 .color-swatch {
@@ -220,18 +273,34 @@
   place-items: center;
 }
 
-.color-swatch[aria-pressed="true"] {
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--c-solid);
+.color-swatch[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--c-solid);
 }
 
-.color-swatch .icon { color: #fff; stroke-width: 3; }
+.color-swatch .icon {
+  color: #fff;
+  stroke-width: 3;
+}
 
 /* ------------------------------------------------------------- responsive */
 @media (max-width: 860px) {
-  .topbar { padding: 18px 20px 12px; flex-wrap: wrap; }
-  .topbar h1 { font-size: 21px; }
-  .topbar-tools { width: 100%; order: 3; }
-  .topbar-tools .search { flex: 1; width: auto; }
+  .topbar {
+    padding: 18px 20px 12px;
+    flex-wrap: wrap;
+  }
+  .topbar h1 {
+    font-size: 21px;
+  }
+  .topbar-tools {
+    width: 100%;
+    order: 3;
+  }
+  .topbar-tools .search {
+    flex: 1;
+    width: auto;
+  }
 }
 
 /* ---------------------------------------------------------- command list
@@ -245,8 +314,18 @@
   color: var(--text-muted);
 }
 
-.palette-input input { flex: 1; border: 0; background: none; font-size: 15px; outline: none; }
-.palette-list { max-height: 340px; overflow-y: auto; padding: 8px; }
+.palette-input input {
+  flex: 1;
+  border: 0;
+  background: none;
+  font-size: 15px;
+  outline: none;
+}
+.palette-list {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 8px;
+}
 
 .palette-group {
   padding: 10px 10px 5px;
@@ -268,11 +347,24 @@
   font-size: 13px;
 }
 
-.palette-item .icon { color: var(--text-secondary); }
-.palette-item .s { margin-left: auto; font-size: 11.5px; color: var(--text-muted); }
-.palette-item:hover { background: var(--surface-sunken); }
-.palette-item.is-active { background: var(--accent-soft); color: var(--accent); }
-.palette-item.is-active .icon { color: var(--accent); }
+.palette-item .icon {
+  color: var(--text-secondary);
+}
+.palette-item .s {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.palette-item:hover {
+  background: var(--surface-sunken);
+}
+.palette-item.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.palette-item.is-active .icon {
+  color: var(--accent);
+}
 
 .palette-foot {
   display: flex;

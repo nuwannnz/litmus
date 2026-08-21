@@ -1,4 +1,11 @@
-import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useReducer,
+  type Dispatch,
+  type ReactNode,
+} from 'react';
 import { initialWorkspaceState, type WorkspaceAction, type WorkspaceState } from './state';
 import { workspaceReducer } from './reducer';
 

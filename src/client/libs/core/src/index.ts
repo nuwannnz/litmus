@@ -1,4 +1,9 @@
-export { WorkspaceProvider, useWorkspace, useWorkspaceDispatch, useWorkspaceSelector } from './workspace/WorkspaceProvider';
+export {
+  WorkspaceProvider,
+  useWorkspace,
+  useWorkspaceDispatch,
+  useWorkspaceSelector,
+} from './workspace/WorkspaceProvider';
 export { initialWorkspaceState } from './workspace/state';
 export type {
   NewProjectInput,
@@ -19,11 +24,7 @@ export {
   useTask,
   useTasks,
 } from './workspace/hooks';
-export {
-  CommandRegistryProvider,
-  useCommands,
-  useRegisterCommands,
-} from './commands/registry';
+export { CommandRegistryProvider, useCommands, useRegisterCommands } from './commands/registry';
 export type { Command } from './commands/registry';
 export type { AppModule } from './modules/types';
 export { appPaths } from './modules/paths';

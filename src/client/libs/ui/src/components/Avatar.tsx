@@ -4,7 +4,11 @@ import { PEOPLE, type PersonId } from '@litmus/domain';
 export function Avatar({ person, className }: { person: PersonId; className?: string }) {
   const p = PEOPLE[person];
   return (
-    <span className={['avatar', className].filter(Boolean).join(' ')} data-color={p.color} title={p.name}>
+    <span
+      className={['avatar', className].filter(Boolean).join(' ')}
+      data-color={p.color}
+      title={p.name}
+    >
       {p.id}
     </span>
   );

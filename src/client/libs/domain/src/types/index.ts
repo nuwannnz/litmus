@@ -8,14 +8,7 @@ export type Priority = 'High' | 'Medium' | 'Low';
 
 /** Flat, workspace-wide task categories (PRD FR-37). */
 export type CategoryName =
-  | 'Design'
-  | 'Dev'
-  | 'Marketing'
-  | 'Meeting'
-  | 'Research'
-  | 'Personal'
-  | 'QA'
-  | 'Docs';
+  'Design' | 'Dev' | 'Marketing' | 'Meeting' | 'Research' | 'Personal' | 'QA' | 'Docs';
 
 export type PersonId = 'NK' | 'AL' | 'JS' | 'ML';
 
