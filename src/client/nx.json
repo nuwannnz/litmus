@@ -19,6 +19,12 @@
         "testTargetName": "test",
         "typecheckTargetName": "typecheck"
       }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
     }
   ],
   "targetDefaults": {
@@ -30,6 +36,13 @@
     "typecheck": {
       "cache": true,
       "dependsOn": ["^build"]
+    },
+    "lint": {
+      "cache": true,
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "options": {
+        "args": ["--max-warnings=0"]
+      }
     }
   },
   "defaultBase": "main"

@@ -10,5 +10,10 @@
     "@litmus/projects": "0.0.1",
     "@litmus/ui": "0.0.1",
     "@litmus/week": "0.0.1"
+  },
+  "nx": {
+    "tags": [
+      "type:app"
+    ]
   }
 }
