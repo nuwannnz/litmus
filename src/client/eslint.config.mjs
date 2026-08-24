@@ -38,7 +38,15 @@ export default tseslint.config(
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+          // Workspace-level tooling config is not a library and carries no
+          // tag, so the two files every project is allowed to reach up and
+          // import by relative path are listed here: the ESLint config itself,
+          // and the shared React/jsdom Vitest config each renderable lib's
+          // `vite.config.ts` composes.
+          allow: [
+            '^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$',
+            '^.*/vitest\\.react\\.config(\\.[cm]?ts)?$',
+          ],
           depConstraints: [
             {
               sourceTag: 'type:app',
