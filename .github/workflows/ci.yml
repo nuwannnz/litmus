@@ -40,8 +40,16 @@ jobs:
           echo "All commit identities OK."
 
   client:
+    # The job's *name* is the status-check context, and "Typecheck and build" is
+    # a required check on both develop and main. It now understates the job —
+    # lint and Vitest run here too — but renaming it silently un-requires the
+    # check, so branch protection has to be updated in the same breath.
     name: Typecheck and build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # nx-set-shas reads this workflow's own run history (see below).
+      actions: read
     defaults:
       run:
         working-directory: src/client
@@ -49,26 +57,87 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # release-please and `nx affected` both want history, not a shallow clone.
+          # release-please and `nx affected` both want history, not a shallow
+          # clone. fetch-depth: 0 also fetches every branch, which is what lets
+          # nx-set-shas resolve `origin/develop` to take a merge base against.
           fetch-depth: 0
 
+      # Caches ~/.npm, keyed on the lockfile (architecture §6.3).
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: src/client/package-lock.json
 
+      # The other half of §6.3: Nx's computation cache, so an unchanged target
+      # is a cache hit instead of a rerun. `actions/cache` paths are relative to
+      # the workspace root, not to `defaults.run.working-directory`.
+      #
+      # A cache entry is immutable once written, so a key that were *only* the
+      # lockfile hash would freeze forever on whatever the first run computed.
+      # The run's SHA makes every run write a fresh entry; the restore-keys do
+      # the reading — newest entry for this lockfile first, then newest entry
+      # for any lockfile, so adding a dependency warms from the previous cache
+      # rather than starting cold.
+      - name: Cache the Nx computation cache
+        uses: actions/cache@v4
+        with:
+          path: src/client/.nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('src/client/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('src/client/package-lock.json') }}-
+            nx-${{ runner.os }}-
+
+      # Exports NX_BASE and NX_HEAD for the `nx affected` steps below. Head is
+      # HEAD either way — on a PR, the merge commit checked out above.
+      #
+      #   pull_request  base = `git merge-base origin/<the PR's own base ref> HEAD`,
+      #                 so a PR into develop is diffed against develop. nx.json's
+      #                 `defaultBase: main` is never consulted, which is the
+      #                 point — it is wrong for this branching model, and a PR
+      #                 into develop diffed against main would drag in
+      #                 everything already integrated but not yet released.
+      #   push          base = the commit of the last successful run of this
+      #                 workflow on the branch just pushed to — hence
+      #                 `github.ref_name`, which is `develop` or `main` and keeps
+      #                 the two triggers honest without a second job. Falls back
+      #                 to `origin/<branch>~1` when there is no green run yet.
+      - uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: ${{ github.ref_name }}
+          workflow-id: ci.yml
+
       - run: npm ci
 
+      # `--max-warnings=0` comes from nx.json's targetDefaults, not from here.
+      #
+      # Nothing affected is a no-op that exits 0, not a failure — the Nx
+      # workspace is src/client, so a docs-only or workflow-only change
+      # legitimately affects no project and these two steps run nothing.
+      - name: Lint affected projects
+        run: npx nx affected -t lint
+
+      - name: Test affected projects
+        run: npx nx affected -t test
+
+      # Deliberately *not* affected-scoped. `typecheck` is a single
+      # `tsc -p tsconfig.json --noEmit` over the whole workspace rather than an
+      # Nx target, so it has no per-project notion of affected to begin with;
+      # and @litmus/web is the only buildable project and sits downstream of
+      # every library, so "affected build" is "build" for any change that
+      # touches the graph at all. The Nx cache above already makes the untouched
+      # build a cache hit, so `affected` here would buy nothing and cost a way
+      # for the build to quietly not happen.
       - name: Typecheck
         run: npm run typecheck
 
       - name: Build
         run: npm run build
 
-# Not yet present, and deliberately not stubbed — a workflow that fails until
-# the tooling catches up trains you to ignore red. Added as each lands:
-#   - Vitest                  (docs/architecture.md §7.2)
+# Vitest (docs/architecture.md §7.2) and ESLint now run above, scoped by
+# `nx affected`. Still not present, and still deliberately not stubbed — a
+# workflow that fails until the tooling catches up trains you to ignore red.
+# Added as each lands:
 #   - pgTAP via supabase CLI  (§7.3 — the RLS suite; mandatory once RLS exists)
 #   - Playwright e2e          (§7.4)
 #   - supabase gen types      (§7.1 — assert regenerating produces no diff)
