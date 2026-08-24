@@ -5,7 +5,11 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    // `@testing-library/jest-dom/vitest` only augments `expect`, so it costs
+    // nothing outside specs, and declaring it once here keeps every program —
+    // the workspace-wide `npm run typecheck` and each project's own
+    // `tsc -p tsconfig.json` — agreeing about the DOM matchers.
+    "types": ["vite/client", "@testing-library/jest-dom/vitest"],
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
