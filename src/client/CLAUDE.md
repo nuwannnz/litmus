@@ -11,17 +11,65 @@ All run from `src/client/`:
 
 ```bash
 npm install
-npm run dev         # nx serve @litmus/web — http://localhost:4200
+npm run dev          # nx serve @litmus/web — http://localhost:4200
 npm run build        # nx build @litmus/web → dist/apps/web
-npm run preview       # nx preview @litmus/web
-npm run typecheck     # tsc -p tsconfig.json --noEmit
+npm run preview      # nx preview @litmus/web
+npm run typecheck    # tsc -p tsconfig.json --noEmit, over the whole workspace
+npm test             # nx run-many -t test — Vitest
+npm run lint         # nx run-many -t lint — ESLint, --max-warnings=0
+npm run lint:fix     # the same, with --fix
+npm run format       # prettier --write .
+npm run format:check # prettier --check .
 npm run graph        # nx dependency graph
 ```
 
-There is no test runner or linter configured yet. Don't invent test/lint
-commands or assume a framework is present — if one gets added, this file
-should be updated with the real invocations. (`docs/architecture.md` §7 plans
-Vitest, pgTAP and Playwright; none of it exists yet.)
+`package.json` is the only source of truth for what exists — don't invent a
+script that isn't in it. `npm test` and `npm run lint` fan out over every
+project that has the target, so neither script needs editing when a library
+gains one. For a scoped run on a feature branch, use
+`npx nx affected -t lint test --base=origin/develop`; pass `--base` explicitly,
+because `nx.json` sets `defaultBase` to `main`, which is the wrong comparison
+point for a branch cut from `develop`.
+
+### Testing
+
+Vitest, and **`libs/domain` is the only project set up for it today**. The
+wiring is Nx's inferred-target style: `@nx/vite/plugin` (declared in `nx.json`)
+finds `libs/domain/vite.config.ts`, sees a `test` block, and infers a `test`
+target from it — no `targets` entry in any `package.json` to maintain.
+`apps/web/vite.config.ts` has no `test` block, so it gets no test target, and
+`nx run-many -t test` currently runs exactly one project. A library joins the
+suite by gaining its own `vite.config.ts` with a `test` block.
+
+Specs sit beside the code they cover (`libs/domain/src/utils/date.spec.ts`),
+and a test names the requirement it pins where it has one —
+`it('FR-10: …', …)`, per `docs/architecture.md` §7.5.
+
+What does **not** exist yet, so don't assume it: no component or DOM testing
+(no jsdom, no Testing Library) — nothing in `apps/web`, `libs/ui` or the
+feature libs is covered; no pgTAP against the local Postgres; no Playwright and
+no E2E project. `docs/architecture.md` §7 plans all three — read it as intent,
+and update this section when one of them actually lands.
+
+### Linting and formatting
+
+ESLint 9, flat config, one file for the whole workspace:
+`src/client/eslint.config.mjs`. `@nx/eslint/plugin` infers a `lint` target for
+every project, and `nx.json`'s `targetDefaults` pass `--max-warnings=0` — a
+warning fails the run, so fix it rather than leave it.
+
+The dependency direction documented under Architecture below is enforced, not
+just described. Each project's `package.json` carries an `nx.tags` entry
+(`type:domain`, `type:ui`, `type:core`, `type:feature`, `type:app`) and
+`@nx/enforce-module-boundaries` lets a tag depend only on the layers to its
+left. All three feature modules share the one `type:feature` tag, which is
+absent from its own allow-list, so a feature module cannot import another.
+**A new library needs its tag** — an untagged project is unconstrained.
+
+Prettier owns formatting (`.prettierrc`, `.prettierignore`), Markdown in this
+directory included; `eslint-config-prettier` sits last in the flat config so
+the two never argue about style. `npm run format` fixes, `npm run format:check`
+is the gate.
 
 ## The local backend
 

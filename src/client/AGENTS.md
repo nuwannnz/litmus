@@ -9,7 +9,9 @@ Repo-wide guidance — what Litmus is, document versioning, branching, policy �
 
 Two things worth knowing before changing anything here:
 
-- **There is no test runner or linter yet.** Don't invent commands or assume a framework.
+- **Vitest and ESLint are configured, but not everywhere.** `npm test` covers `libs/domain`
+  only, and there is no component/DOM testing, pgTAP or E2E yet. `CLAUDE.md` has the real
+  commands and the current limits — read them there rather than assuming either way.
 - **The reducer in `libs/core` and the split between `Task` and `ProjectTask` are prototype
   code.** `docs/architecture.md` plans to replace both. Read that document as intent, not as a
   description of what is here.
