@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { STATUSES, STATUS_LABELS, uid, type TaskStatus } from '@litmus/domain';
+import { STATUSES, STATUS_LABELS, uuidv7, type TaskStatus } from '@litmus/domain';
 import {
   appPaths,
   useAllNotes,
@@ -65,7 +65,7 @@ export function ProjectDetailPage() {
   };
 
   const addTask = () => {
-    dispatch({ type: 'projectTask/add', id: uid('pt'), projectId: project.id });
+    dispatch({ type: 'projectTask/add', id: uuidv7(), projectId: project.id });
     toast(`Task added to ${project.name}`, 'plus');
   };
 

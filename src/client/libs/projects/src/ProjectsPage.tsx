@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { pluralize, uid } from '@litmus/domain';
+import { pluralize, uuidv7 } from '@litmus/domain';
 import { appPaths, useProjects, useWorkspaceDispatch } from '@litmus/core';
 import {
   Button,
@@ -39,7 +39,7 @@ export function ProjectsPage() {
   const open = (projectId: string) => navigate(appPaths.project(projectId));
 
   const create = (draft: NewProjectDraft) => {
-    dispatch({ type: 'project/add', id: uid('p'), input: draft });
+    dispatch({ type: 'project/add', id: uuidv7(), input: draft });
     setCreating(false);
     toast(`“${draft.name}” created`, 'folder');
   };

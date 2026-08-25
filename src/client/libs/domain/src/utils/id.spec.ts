@@ -1,45 +1,48 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { uid } from './id';
+import { uuidv7 } from './id';
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.useRealTimers();
 });
 
-describe('uid', () => {
-  it('keeps the caller prefix verbatim at the front', () => {
-    expect(uid('t-')).toMatch(/^t-/);
-    expect(uid('note-')).toMatch(/^note-/);
-    expect(uid('p')).toMatch(/^p/);
-  });
-
-  it('appends at most six lowercase base-36 characters', () => {
+describe('uuidv7', () => {
+  it('S-3.6: generated ids are RFC 9562 UUIDv7 — version nibble is 7', () => {
     for (let i = 0; i < 100; i += 1) {
-      expect(uid('t-').slice(2)).toMatch(/^[0-9a-z]{0,6}$/);
+      expect(uuidv7()).toMatch(/^[\da-f]{8}-[\da-f]{4}-7[\da-f]{3}-[\da-f]{4}-[\da-f]{12}$/);
     }
   });
 
-  it('tolerates an empty prefix', () => {
-    expect(uid('')).toMatch(/^[0-9a-z]{0,6}$/);
+  it('S-3.6: generated ids are RFC 9562 UUIDv7 — variant bits are 10xx', () => {
+    for (let i = 0; i < 100; i += 1) {
+      expect(parseInt(uuidv7()[19] ?? '', 16) & 0b1100).toBe(0b1000);
+    }
+  });
+
+  it('S-3.6: the first 48 bits are the unix timestamp in milliseconds', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-25T12:00:00Z'));
+    const id = uuidv7();
+    const tsBits = BigInt(`0x${id.slice(0, 8)}${id.slice(9, 13)}`);
+    expect(tsBits).toBe(BigInt(Date.now()));
+  });
+
+  it('S-3.6: ids sort in creation order (time-ordered)', () => {
+    const ids: string[] = [];
+    for (let ms = 0; ms < 5; ms += 1) {
+      vi.useFakeTimers();
+      vi.setSystemTime(1_700_000_000_000 + ms);
+      ids.push(uuidv7());
+    }
+    expect([...ids].sort()).toEqual(ids);
+    for (let i = 1; i < ids.length; i += 1) {
+      expect((ids[i - 1] ?? '') < (ids[i] ?? '')).toBe(true);
+    }
   });
 
   it('does not repeat itself across a burst of creations', () => {
-    const ids = new Set(Array.from({ length: 250 }, () => uid('t-')));
+    const ids = new Set(Array.from({ length: 250 }, () => uuidv7()));
     expect(ids.size).toBe(250);
-  });
-
-  it('draws its suffix from Math.random', () => {
-    const random = vi.spyOn(Math, 'random').mockReturnValue(0.5);
-    expect(uid('t-')).toBe('t-i'); // (0.5).toString(36) === '0.i'
-    expect(random).toHaveBeenCalledTimes(1);
-  });
-
-  // Documented weakness, not a desired behaviour: the suffix is whatever base-36
-  // digits Math.random happens to produce, so it is *up to* six characters and
-  // can be empty. Ids are client-side and optimistic today (the API will own
-  // them), but tighten this before they are ever persisted.
-  it('degenerates to the bare prefix when Math.random returns exactly 0', () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0);
-    expect(uid('t-')).toBe('t-');
   });
 });

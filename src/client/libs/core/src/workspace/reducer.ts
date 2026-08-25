@@ -4,7 +4,7 @@ import {
   isNote,
   mapNode,
   openFolders,
-  uid,
+  uuidv7,
   type Project,
   type Task,
 } from '@litmus/domain';
@@ -38,7 +38,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
   switch (action.type) {
     case 'task/add': {
       const task: Task = {
-        id: uid('t'),
+        id: uuidv7(),
         title: action.input.title,
         day: action.input.day,
         category: action.input.category,
@@ -83,7 +83,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
     case 'subtask/add':
       return patchTask(state, action.taskId, (t) => ({
         ...t,
-        subtasks: [...t.subtasks, { id: uid('s'), label: action.label, done: false }],
+        subtasks: [...t.subtasks, { id: uuidv7(), label: action.label, done: false }],
       }));
 
     case 'subtask/remove':
@@ -125,7 +125,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
         tasks: [
           ...state.tasks,
           ...taskTitles.map((title): Task => ({
-            id: uid('t'),
+            id: uuidv7(),
             title,
             day: null,
             category: 'Design',

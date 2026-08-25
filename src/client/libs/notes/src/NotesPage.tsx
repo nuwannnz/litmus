@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ancestorFolderIds, flattenNotes, uid } from '@litmus/domain';
+import { ancestorFolderIds, flattenNotes, uuidv7 } from '@litmus/domain';
 import {
   appPaths,
   useAllNotes,
@@ -65,14 +65,14 @@ export function NotesPage() {
   };
 
   const createNote = () => {
-    const id = uid('n-');
+    const id = uuidv7();
     dispatch({ type: 'note/add', id });
     toast('Note created', 'note');
     openNote(id);
   };
 
   const createFolder = () => {
-    dispatch({ type: 'folder/add', id: uid('f-') });
+    dispatch({ type: 'folder/add', id: uuidv7() });
     toast('Folder created', 'folder');
   };
 
