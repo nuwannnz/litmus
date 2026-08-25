@@ -1,0 +1,68 @@
+# Deploys the dev environment to Cloudflare Pages (docs/architecture.md §6/§6.3).
+#
+# Trigger is push to `develop` only — the same event a PR merge produces — so
+# nothing deploys from feature branches or `main`. Production deployment
+# (`deploy-prod.yml`, on push to `main`) is deliberately not built yet; when it
+# lands it will be this workflow with a different trigger and Pages branch.
+name: Deploy dev
+
+on:
+  push:
+    branches: [develop]
+
+# Overlapping merges to develop are common; only the newest one needs to
+# deploy, so an in-flight run is cancelled rather than queued behind.
+concurrency:
+  group: deploy-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/client
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Kept consistent with ci.yml: history for release-please and
+          # `nx affected`. This workflow builds everything regardless, but the
+          # convention costs little and matches the rest of the repo.
+          fetch-depth: 0
+
+      # Same cache recipe as ci.yml (§6.3): ~/.npm keyed on the client
+      # lockfile.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/client/package-lock.json
+
+      - run: npm ci
+
+      # Runs the Nx build for @litmus/web, emitting to dist/apps/web — the
+      # directory named by pages_build_output_dir in src/client/wrangler.toml.
+      - name: Build
+        run: npm run build
+
+      # No wrangler positional argument and no --config flag: wrangler reads
+      # src/client/wrangler.toml from the working directory above, which
+      # supplies both the project name (`litmus-app`) and
+      # pages_build_output_dir. --branch=develop makes this a Pages *branch*
+      # deploy into the preview environment, which §6 designates as the dev
+      # environment's frontend; production aliases move separately when
+      # deploy-prod.yml arrives.
+      #
+      # Wrangler is invoked via npx rather than added as a devDependency — CI
+      # elsewhere in this repo already runs tools that way (npx nx), and it
+      # keeps the app's lockfile free of deploy-only tooling.
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler@4 pages deploy --branch develop
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
