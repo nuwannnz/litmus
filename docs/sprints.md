@@ -40,7 +40,7 @@ Start dates assume Sprint 1 begins Monday **2026-08-31**. Total: 26 sprints,
 
 | Sprint | Starts     | Stories                                                                                                  | Days |
 | ------ | ---------- | -------------------------------------------------------------------------------------------------------- | ---- |
-| 4      | 2026-09-21 | S-3.3 merge Task and ProjectTask (**precedes every surface migration**) · S-3.6 UUIDv7 keys              | 3.5  |
+| 4      | 2026-09-21 | ✅ S-3.3 merge Task and ProjectTask (**precedes every surface migration**) · ✅ S-3.6 UUIDv7 keys         | 3.5  |
 | 5      | 2026-09-28 | S-3.4 TanStack Query provider · S-3.8 libs/api test harness · S-3.5 partial mutations                    | 3.75 |
 | 6      | 2026-10-05 | S-6.1 week query from real data (**pulled forward from 0.3.0**) · S-4.1 real sessions · S-4.3 register   | 3.0  |
 | 7      | 2026-10-12 | S-3.7 retire the workspace reducer · S-5.1 rail: Settings entry, Notes disabled                          | 3.5  |
@@ -84,7 +84,7 @@ Start dates assume Sprint 1 begins Monday **2026-08-31**. Total: 26 sprints,
 | 25     | 2027-02-15 | S-12.5 warm load under 1 s · S-12.7 journey specs UJ-1…UJ-5 · S-13.6 unpause guard                                        | 4.0  |
 | 26     | 2027-02-22 | S-12.8 offline-reconnect E2E · S-12.9 responsive sweep · S-13.7 domain + TLS · **S-13.8 cut 1.0.0**                       | 2.75 |
 
-## 3. Status as of 2026-08-25 (end of Sprint 3's work)
+## 3. Status as of 2026-08-25 (end of Sprint 4's work)
 
 Tracked against GitHub issues and the "Litmus board" project (status **Done**):
 
@@ -97,6 +97,10 @@ Tracked against GitHub issues and the "Litmus board" project (status **Done**):
   PR #124 (committed `database.types.ts` plus the CI no-diff job). Milestone 0.1.0
   remains open only because **S-13.1 is still open** — it carries forward as the first
   item of the next sprint of work.
+- **Sprint 4 — complete** (2026-08-25). S-3.3 delivered by PR #126 (one `Task` in
+  `libs/domain`; the reducer's `projectTasks` table retired; Week and Project boards
+  render the same objects) and S-3.6 by PR #127 (RFC 9562 `uuidv7()` minted at every
+  create path). **S-13.1 still carries forward**, now into Sprint 5.
 - **Completed outside this plan's sprints:** S-1.1–S-1.5 (tooling), S-2.1–S-2.6
   (schema foundation) — these predate the sprint cadence — and S-13.4
   release-please.yml, which was never slotted.
