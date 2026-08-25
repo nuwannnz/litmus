@@ -122,16 +122,22 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
       return {
         ...state,
         projects: [project, ...state.projects],
-        projectTasks: [
-          ...state.projectTasks,
-          ...taskTitles.map((title) => ({
-            id: uid('pt'),
-            projectId: project.id,
+        tasks: [
+          ...state.tasks,
+          ...taskTitles.map((title): Task => ({
+            id: uid('t'),
             title,
-            category: 'Design' as const,
-            status: 'todo' as const,
-            due: '',
+            day: null,
+            category: 'Design',
+            projectId: project.id,
+            time: '',
+            timeEnd: '',
+            status: 'todo',
+            priority: 'Medium',
             assignee: CURRENT_USER,
+            desc: '',
+            noteIds: [],
+            subtasks: [],
           })),
         ],
       };
@@ -155,16 +161,22 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
         projects: state.projects.map((p) =>
           p.id === project.id ? recount({ ...p, taskCount: p.taskCount + 1 }, 0) : p,
         ),
-        projectTasks: [
-          ...state.projectTasks,
+        tasks: [
+          ...state.tasks,
           {
             id: action.id,
-            projectId: project.id,
             title: 'New task',
+            day: null,
             category: 'Design',
+            projectId: project.id,
+            time: '',
+            timeEnd: '',
             status: 'todo',
-            due: '',
+            priority: 'Medium',
             assignee: project.members[0] ?? CURRENT_USER,
+            desc: '',
+            noteIds: [],
+            subtasks: [],
           },
         ],
       };
@@ -172,7 +184,7 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
 
     case 'projectTask/setStatus':
     case 'projectTask/toggleDone': {
-      const task = state.projectTasks.find((t) => t.id === action.id);
+      const task = state.tasks.find((t) => t.id === action.id);
       if (!task) return state;
       const next =
         action.type === 'projectTask/setStatus'
@@ -180,14 +192,12 @@ export function workspaceReducer(state: WorkspaceState, action: WorkspaceAction)
           : task.status === 'done'
             ? 'todo'
             : 'done';
-      if (next === task.status) return state;
+      if (next === task.status || task.projectId === null) return state;
       const delta = next === 'done' ? 1 : task.status === 'done' ? -1 : 0;
       return {
         ...state,
         projects: applyRecount(state, task.projectId, delta),
-        projectTasks: state.projectTasks.map((t) =>
-          t.id === task.id ? { ...t, status: next } : t,
-        ),
+        tasks: state.tasks.map((t) => (t.id === task.id ? { ...t, status: next } : t)),
       };
     }
 

@@ -12,6 +12,5 @@ Two things worth knowing before changing anything here:
 - **Vitest and ESLint are configured, but not everywhere.** `npm test` covers `libs/domain`
   only, and there is no component/DOM testing, pgTAP or E2E yet. `CLAUDE.md` has the real
   commands and the current limits — read them there rather than assuming either way.
-- **The reducer in `libs/core` and the split between `Task` and `ProjectTask` are prototype
-  code.** `docs/architecture.md` plans to replace both. Read that document as intent, not as a
-  description of what is here.
+- **The reducer in `libs/core` is prototype code.** `docs/architecture.md` plans to replace it
+  with TanStack Query. Read that document as intent, not as a description of what is here.

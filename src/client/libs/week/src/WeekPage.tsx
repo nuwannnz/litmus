@@ -58,14 +58,19 @@ export function WeekPage() {
     [lookupProject],
   );
 
+  // FR-35: the board shows exactly the tasks whose due date falls in this
+  // week, whichever surface created them. Undated tasks belong elsewhere.
   const visible = useMemo(() => {
+    const first = days[0]?.iso ?? '';
+    const last = days[days.length - 1]?.iso ?? '';
+    const inWeek = tasks.filter((t) => t.day !== null && t.day >= first && t.day <= last);
     const q = query.trim().toLowerCase();
-    return q ? tasks.filter((t) => matchesQuery(t, projectName(t), q)) : tasks;
-  }, [tasks, query, projectName]);
+    return q ? inWeek.filter((t) => matchesQuery(t, projectName(t), q)) : inWeek;
+  }, [tasks, query, projectName, days]);
 
   const byDay = useMemo(() => {
     const map = new Map<string, Task[]>(days.map((d) => [d.iso, []]));
-    for (const task of visible) map.get(task.day)?.push(task);
+    for (const task of visible) if (task.day) map.get(task.day)?.push(task);
     return map;
   }, [days, visible]);
 
