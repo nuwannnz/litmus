@@ -1,26 +1,39 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { appPaths } from '@litmus/core';
-import { Button, CheckMark, Field } from '@litmus/ui';
+import { Button, Checkbox, Field } from '@litmus/ui';
 import { AuthLayout } from '../components/AuthLayout';
 import { OAuthRow } from '../components/OAuthRow';
 import { PasswordField } from '../components/PasswordField';
 import { useAuth } from '../AuthProvider';
 
+/**
+ * FR-4 registration. Local and hosted stacks differ on email confirmation —
+ * with confirmations off (local default) `signUp` returns a session and the
+ * user lands straight on the Week Board; where confirmation is required the
+ * server's message surfaces in place instead.
+ */
 export function RegisterPage() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState('Nuwan K.');
-  const [email, setEmail] = useState('nuwan@litmus.so');
-  const [password, setPassword] = useState('demopassword');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [agreed, setAgreed] = useState(false);
+  const [consentWarning, setConsentWarning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const enter = async () => {
+    if (!agreed) {
+      setConsentWarning(true);
+      return;
+    }
     setError(null);
     setBusy(true);
     try {
       await signUp(name, email, password);
+      // Success means a session: the Week Board renders its empty state.
       navigate(appPaths.week, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed — try again.');
@@ -56,6 +69,7 @@ export function RegisterPage() {
             name="name"
             value={name}
             placeholder="Jane Doe"
+            autoComplete="name"
             required
             onChange={(e) => setName(e.target.value)}
           />
@@ -68,6 +82,7 @@ export function RegisterPage() {
             name="email"
             value={email}
             placeholder="you@example.com"
+            autoComplete="email"
             required
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -77,10 +92,17 @@ export function RegisterPage() {
           <PasswordField value={password} onChange={setPassword} />
         </Field>
 
-        <div className="field-row">
+        <div className={`field-row ${consentWarning && !agreed ? 'needs-consent' : ''}`}>
           <label>
-            <CheckMark checked /> I agree to the <a href="#terms">Terms</a> &amp;{' '}
-            <a href="#privacy">Privacy Policy</a>
+            <Checkbox
+              checked={agreed}
+              onToggle={() => {
+                setAgreed((v) => !v);
+                setConsentWarning(true);
+              }}
+              label="I agree to the Terms & Privacy Policy"
+            />{' '}
+            I agree to the <a href="#terms">Terms</a> &amp; <a href="#privacy">Privacy Policy</a>
           </label>
         </div>
 

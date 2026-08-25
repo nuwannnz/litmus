@@ -213,3 +213,11 @@
   color: var(--text-secondary);
   font-size: 14px;
 }
+
+.field-row.needs-consent label {
+  color: #8a3d1f;
+}
+
+[data-theme='dark'] .field-row.needs-consent label {
+  color: #f3b18c;
+}
