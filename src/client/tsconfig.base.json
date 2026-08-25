@@ -32,6 +32,7 @@
       "@litmus/ui": ["libs/ui/src/index.ts"],
       "@litmus/ui/styles.css": ["libs/ui/src/styles/index.css"],
       "@litmus/domain": ["libs/domain/src/index.ts"],
+      "@litmus/api": ["libs/api/src/index.ts"],
       "@litmus/core": ["libs/core/src/index.ts"],
       "@litmus/week": ["libs/week/src/index.ts"],
       "@litmus/projects": ["libs/projects/src/index.ts"],

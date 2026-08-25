@@ -14,7 +14,7 @@ import tseslint from 'typescript-eslint';
  * the executable form of the dependency direction documented in
  * `src/client/CLAUDE.md`:
  *
- *     domain -> ui -> core -> feature modules -> apps/web
+ *     domain -> api -> ui -> core -> feature modules -> apps/web
  *
  * A layer may depend on everything to its left and nothing to its right, and
  * because all three feature modules share the single tag `type:feature` — which
@@ -50,14 +50,24 @@ export default tseslint.config(
           depConstraints: [
             {
               sourceTag: 'type:app',
-              onlyDependOnLibsWithTags: ['type:feature', 'type:core', 'type:ui', 'type:domain'],
+              onlyDependOnLibsWithTags: [
+                'type:feature',
+                'type:core',
+                'type:ui',
+                'type:api',
+                'type:domain',
+              ],
             },
             {
               sourceTag: 'type:feature',
-              onlyDependOnLibsWithTags: ['type:core', 'type:ui', 'type:domain'],
+              onlyDependOnLibsWithTags: ['type:core', 'type:ui', 'type:api', 'type:domain'],
             },
-            { sourceTag: 'type:core', onlyDependOnLibsWithTags: ['type:ui', 'type:domain'] },
-            { sourceTag: 'type:ui', onlyDependOnLibsWithTags: ['type:domain'] },
+            {
+              sourceTag: 'type:core',
+              onlyDependOnLibsWithTags: ['type:ui', 'type:api', 'type:domain'],
+            },
+            { sourceTag: 'type:ui', onlyDependOnLibsWithTags: ['type:api', 'type:domain'] },
+            { sourceTag: 'type:api', onlyDependOnLibsWithTags: ['type:domain'] },
             { sourceTag: 'type:domain', onlyDependOnLibsWithTags: [] },
           ],
         },
@@ -109,6 +119,34 @@ export default tseslint.config(
       // annotations, so the runtime propTypes rules have nothing to add and
       // would fire on every component in the workspace.
       'react/prop-types': 'off',
+    },
+  },
+
+  // ---------------------------------------------------------------- data layer
+  // `supabase-js` is reachable only through `@litmus/api` — feature, core, UI
+  // and app code never import it directly, which keeps the data layer
+  // swappable and mockable (`docs/architecture.md` §5.1).
+  {
+    files: ['apps/**/*.{ts,tsx}', 'libs/**/*.{ts,tsx}'],
+    ignores: ['libs/api/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@supabase/supabase-js',
+              message: 'Data access goes through @litmus/api.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@supabase/*'],
+              message: 'Data access goes through @litmus/api.',
+            },
+          ],
+        },
+      ],
     },
   },
 
