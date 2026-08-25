@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs every pgTAP test in this directory against the local stack.
+# Runs every .sql suite in this directory against the local stack.
 #
 # Usage:
 #   npx supabase stop   # optional, guarantees a clean state
@@ -17,7 +17,11 @@ DB_URL="${SUPABASE_DB_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgr
 here="$(cd "$(dirname "$0")" && pwd)"
 
 failed=0
-for test_file in "$here"/*_test.sql; do
+for test_file in "$here"/*.sql; do
+  # The runner itself lives here too; don't try to feed it to psql.
+  if [ "$(basename "$test_file")" = "run_tests.sh" ]; then
+    continue
+  fi
   echo "== $(basename "$test_file")"
   if ! psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f "$test_file"; then
     failed=1
