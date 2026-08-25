@@ -190,6 +190,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The committed file has to pass the same formatting gates as everything
+      # else in src/client (it is prettier --write'd on generation locally), so
+      # npm is needed here to run the workspace's own Prettier — pinned by the
+      # lockfile — over the fresh output before diffing. Same cache pattern as
+      # the client job above.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/client/package-lock.json
+
+      - run: npm ci
+        working-directory: src/client
+
       # Same pin as the pgTAP job above — the generator's output format can
       # change between CLI releases, so "green" has to mean one version.
       - uses: supabase/setup-cli@v3
@@ -209,6 +223,12 @@ jobs:
         run: >
           supabase gen types typescript --local
           > src/client/libs/api/src/database.types.ts
+
+      # Same normalization the developer applies locally; without it the diff
+      # would only ever show Prettier noise (quote style, semicolons).
+      - name: Format the generated file
+        run: npx prettier --write libs/api/src/database.types.ts
+        working-directory: src/client
 
       - name: Fail if the committed types are stale
         run: |
