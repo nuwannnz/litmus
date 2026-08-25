@@ -159,14 +159,14 @@ link across through `appPaths` (`@litmus/core`) and share UI through
 
 **Data layer**: `libs/core/src/workspace` holds a single reducer
 (`WorkspaceAction` union) operating on `WorkspaceState` (tasks, projects,
-projectTasks, notes), seeded via `structuredClone` from `libs/domain`'s seed
-data. This is the one place an API would plug in — there's no fetch/service
-layer to route around when it does.
+notes), seeded via `structuredClone` from `libs/domain`'s seed data. This is
+the one place an API would plug in — there's no fetch/service layer to route
+around when it does.
 
-> Note for when the backend lands: `docs/architecture.md` §3.1 merges `Task`
-> and `ProjectTask` into one type, and §5.1 replaces this reducer with
-> TanStack Query. Both are planned, neither has happened — the code here is
-> still the in-memory prototype.
+> Note for when the backend lands: `docs/architecture.md` §5.1 replaces this
+> reducer with TanStack Query. That is planned, not built — S-3.3 already
+> merged `Task` and `ProjectTask` into the one §3.1 task type, but the state
+> here is still the in-memory prototype.
 
 **Styling**: plain CSS, token-driven, split by owner — `@litmus/ui` holds
 tokens/reset/shared primitives, each module ships only its own layout CSS.

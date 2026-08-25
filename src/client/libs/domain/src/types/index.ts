@@ -25,12 +25,19 @@ export interface Subtask {
   done: boolean;
 }
 
-/** A task that lives on the Week board. */
+/**
+ * The one task model behind every surface (architecture §3.1): Week Board rows
+ * are `where day between monday and sunday`, Project Board rows are
+ * `where projectId = :id`, and a task with both simply sits on both.
+ */
 export interface Task {
   id: string;
   title: string;
-  /** ISO `yyyy-mm-dd`. Drives which day column the task sits in. */
-  day: string;
+  /**
+   * ISO `yyyy-mm-dd`, or null when the task carries no due date. Non-null is
+   * what puts a task on the Week Board (PRD FR-35) — no copy step involved.
+   */
+  day: string | null;
   category: CategoryName;
   projectId: string | null;
   time: string;
@@ -62,17 +69,6 @@ export interface Project {
   created: string;
   members: PersonId[];
   noteIds: string[];
-}
-
-/** A task that belongs to a project board rather than the Week board. */
-export interface ProjectTask {
-  id: string;
-  projectId: string;
-  title: string;
-  category: CategoryName;
-  status: TaskStatus;
-  due: string;
-  assignee: PersonId;
 }
 
 export interface NoteFolder {

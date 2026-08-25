@@ -1,10 +1,16 @@
 import type { DragEvent } from 'react';
-import { STATUSES, STATUS_LABELS, type ProjectTask, type TaskStatus } from '@litmus/domain';
+import {
+  STATUSES,
+  STATUS_LABELS,
+  formatShortDate,
+  type Task,
+  type TaskStatus,
+} from '@litmus/domain';
 import { Avatar, CountPill, Icon, TaskCard, useDropTarget } from '@litmus/ui';
 import { PROJECT_TASK_DND } from '../constants';
 
 export interface ProjectKanbanProps {
-  tasks: ProjectTask[];
+  tasks: Task[];
   draggingId: string | null;
   onDragStateChange: (taskId: string | null) => void;
   onMove: (taskId: string, status: TaskStatus) => void;
@@ -34,7 +40,7 @@ export function ProjectKanban({
 
 interface KanbanColumnProps extends Omit<ProjectKanbanProps, 'tasks'> {
   status: TaskStatus;
-  tasks: ProjectTask[];
+  tasks: Task[];
 }
 
 function KanbanColumn({ status, tasks, draggingId, onDragStateChange, onMove }: KanbanColumnProps) {
@@ -68,7 +74,7 @@ function KanbanColumn({ status, tasks, draggingId, onDragStateChange, onMove }: 
 }
 
 interface KanbanCardProps {
-  task: ProjectTask;
+  task: Task;
   dragging: boolean;
   onDragStateChange: (taskId: string | null) => void;
 }
@@ -90,10 +96,10 @@ function KanbanCard({ task, dragging, onDragStateChange }: KanbanCardProps) {
       onDragEnd={() => onDragStateChange(null)}
       meta={
         <>
-          {task.due && (
+          {task.day && (
             <span>
               <Icon name="calendar" size="sm" />
-              {task.due}
+              {formatShortDate(task.day)}
             </span>
           )}
           <Avatar person={task.assignee} />

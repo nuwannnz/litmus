@@ -1,13 +1,11 @@
 import {
   SEED_NOTES,
   SEED_PROJECTS,
-  SEED_PROJECT_TASKS,
   SEED_TASKS,
   type CategoryName,
   type ColorName,
   type NoteNode,
   type Project,
-  type ProjectTask,
   type Task,
   type TaskStatus,
 } from '@litmus/domain';
@@ -15,7 +13,6 @@ import {
 export interface WorkspaceState {
   tasks: Task[];
   projects: Project[];
-  projectTasks: ProjectTask[];
   notes: NoteNode[];
 }
 
@@ -23,7 +20,6 @@ export interface WorkspaceState {
 export const initialWorkspaceState = (): WorkspaceState => ({
   tasks: structuredClone(SEED_TASKS),
   projects: structuredClone(SEED_PROJECTS),
-  projectTasks: structuredClone(SEED_PROJECT_TASKS),
   notes: structuredClone(SEED_NOTES),
 });
 

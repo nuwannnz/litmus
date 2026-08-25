@@ -71,9 +71,13 @@ export function TaskMetaList({ task, project, projects, onPatch }: TaskMetaListP
       <MetaRow icon="calendar" label="Date">
         <input
           type="date"
-          value={task.day}
+          value={task.day ?? ''}
           aria-label="Due date"
-          onChange={(e) => e.target.value && onPatch({ day: e.target.value })}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value) onPatch({ day: value });
+            else if (task.projectId) onPatch({ day: null });
+          }}
         />
       </MetaRow>
 

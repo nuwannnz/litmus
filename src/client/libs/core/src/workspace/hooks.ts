@@ -1,12 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import {
-  findNote,
-  flattenNotes,
-  type Note,
-  type Project,
-  type ProjectTask,
-  type Task,
-} from '@litmus/domain';
+import { findNote, flattenNotes, type Note, type Project, type Task } from '@litmus/domain';
 import { useWorkspace } from './WorkspaceProvider';
 
 export function useTasks(): Task[] {
@@ -33,11 +26,12 @@ export function useProjectLookup(): (id: string | null | undefined) => Project |
   return useCallback((id) => (id ? (projects.find((p) => p.id === id) ?? null) : null), [projects]);
 }
 
-export function useProjectTasks(projectId: string | null | undefined): ProjectTask[] {
-  const { projectTasks } = useWorkspace();
+/** The same rows the Week Board reads — filtered by project instead of by day (§3.1). */
+export function useProjectTasks(projectId: string | null | undefined): Task[] {
+  const { tasks } = useWorkspace();
   return useMemo(
-    () => (projectId ? projectTasks.filter((t) => t.projectId === projectId) : []),
-    [projectTasks, projectId],
+    () => (projectId ? tasks.filter((t) => t.projectId === projectId) : []),
+    [tasks, projectId],
   );
 }
 

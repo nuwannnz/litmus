@@ -1,8 +1,8 @@
-import { PEOPLE, categoryColor, type ProjectTask } from '@litmus/domain';
+import { PEOPLE, categoryColor, formatShortDate, type Task } from '@litmus/domain';
 import { Avatar, Checkbox, Chip, Icon } from '@litmus/ui';
 
 export interface ProjectTaskRowProps {
-  task: ProjectTask;
+  task: Task;
   onToggle: () => void;
 }
 
@@ -14,9 +14,9 @@ export function ProjectTaskRow({ task, onToggle }: ProjectTaskRowProps) {
       <Chip color={categoryColor(task.category)} dot>
         {task.category}
       </Chip>
-      {task.due && (
+      {task.day && (
         <Chip plain>
-          <Icon name="calendar" size="sm" /> {task.due}
+          <Icon name="calendar" size="sm" /> {formatShortDate(task.day)}
         </Chip>
       )}
       <Avatar person={PEOPLE[task.assignee].id} />

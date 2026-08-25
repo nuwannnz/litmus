@@ -57,8 +57,9 @@ export function buildWeek(startIso: string, offset: number, todayIso: string): W
   });
 }
 
-/** `Aug 10 – 16, 2026`, collapsing the month when both ends share one. */
-export function formatWeekLabel(days: WeekDay[]): string {
+/** `Aug 10 – 16, 2026`, collapsing the month when both ends share one. */ export function formatWeekLabel(
+  days: WeekDay[],
+): string {
   const first = days[0];
   const last = days[days.length - 1];
   if (!first || !last) return '';
@@ -68,4 +69,10 @@ export function formatWeekLabel(days: WeekDay[]): string {
   const right =
     a.getMonth() === b.getMonth() ? `${b.getDate()}` : `${at(MONTHS, b.getMonth())} ${b.getDate()}`;
   return `${left} – ${right}, ${b.getFullYear()}`;
+}
+
+/** `Aug 15` — how a task's due date reads on cards and rows. */
+export function formatShortDate(iso: string): string {
+  const d = parseIso(iso);
+  return `${at(MONTHS, d.getMonth())} ${d.getDate()}`;
 }
