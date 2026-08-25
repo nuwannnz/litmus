@@ -95,8 +95,11 @@ workspace — it is a repo-level tool, not a client one. Ports come from `config
 | Studio                   | `http://127.0.0.1:54323`                                  |
 | Local inbox — auth mail  | `http://127.0.0.1:54324`                                  |
 
-`supabase status` prints the local `anon` key; it and the API URL are what `VITE_SUPABASE_URL`
-and `VITE_SUPABASE_ANON_KEY` point at locally (`docs/architecture.md` §6.2). The anon key is
+`supabase status` prints the local `anon` key — the legacy JWT key, which is all the local stack
+issues. It and the API URL are what `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` point at
+locally; hosted environments use `VITE_SUPABASE_PUBLISHABLE_KEY` with an `sb_publishable_…` key
+instead (`docs/architecture.md` §6.2), so whatever reads these vars must accept either name or a
+client constructed from either key. The anon/publishable key is
 public by design — RLS is the whole security model (§2.2).
 
 Email and password sign-in works out of the box, with confirmations off locally, so mail that

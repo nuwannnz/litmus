@@ -23,6 +23,9 @@ jobs:
   deploy:
     name: Build and deploy to Cloudflare Pages
     runs-on: ubuntu-latest
+    # §6.2: secrets live in the `dev` GitHub Environment so this workflow sees
+    # only the dev Supabase project's credentials, never prod's.
+    environment: dev
     defaults:
       run:
         working-directory: src/client
@@ -45,10 +48,31 @@ jobs:
 
       - run: npm ci
 
+      # §6.3: migrations are forward-only and applied by CI before the frontend
+      # deploys — the reverse order ships a client querying columns that don't
+      # exist yet. Runs from the repo root (where supabase/ lives), so this
+      # step overrides the job-level working-directory.
+      - name: Apply database migrations
+        run: npx supabase@latest db push --project-ref "$SUPABASE_PROJECT_ID"
+        working-directory: .
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+
       # Runs the Nx build for @litmus/web, emitting to dist/apps/web — the
       # directory named by pages_build_output_dir in src/client/wrangler.toml.
+      #
+      # Vite inlines VITE_* vars at build time, and wrangler does a direct
+      # upload — Cloudflare never builds — so these must be set here rather
+      # than as Pages dashboard env vars. The publishable key
+      # (sb_publishable_...) is the current Supabase standard — the JWT-based
+      # anon key it replaces is deprecated by end of 2026. It is public by
+      # design; RLS is the security model (§2.2).
       - name: Build
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://${{ secrets.SUPABASE_PROJECT_ID }}.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
 
       # No wrangler positional argument and no --config flag: wrangler reads
       # src/client/wrangler.toml from the working directory above, which

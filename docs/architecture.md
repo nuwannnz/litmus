@@ -1,9 +1,9 @@
 ---
 title: Architecture — Litmus
-version: 1.0.1
+version: 1.1.0
 status: proposed
 created: 2026-08-21
-updated: 2026-08-21
+updated: 2026-08-25
 requires: docs/prd.md >= 2.0.0
 ---
 
@@ -150,10 +150,12 @@ content authored by anyone else, it is a reasonable trade.
 3. **Short access-token TTL with refresh-token rotation.** Supabase defaults to a 1-hour access
    token; enable rotation with reuse detection so a stolen refresh token is single-use and its reuse
    invalidates the family.
-4. **Never ship the `service_role` key to the client.** It bypasses RLS entirely. It belongs in CI
-   secrets and nowhere else — not in `.env` files that Vite inlines, which is a real hazard given
-   Vite exposes anything prefixed `VITE_`. The **anon key is public by design** and safe to ship;
-   RLS is what protects the data.
+4. **Never ship the `service_role` (or `sb_secret_…`) key to the client.** It bypasses RLS entirely.
+   It belongs in CI secrets and nowhere else — not in `.env` files that Vite inlines, which is a real
+   hazard given Vite exposes anything prefixed `VITE_`. The **publishable key is public by design**
+   and safe to ship; RLS is what protects the data. Publishable (`sb_publishable_…`) keys are the
+   current Supabase standard — the JWT-based `anon` key they replace is deprecated by the end of
+   2026, and the local stack still issues only `anon` keys.
 
 `prd.md` §8 is updated to match, with this reasoning recorded.
 
@@ -520,10 +522,10 @@ Automate it or make it step one of the next release — but don't rely on rememb
 | Value | Where | Notes |
 |---|---|---|
 | `VITE_SUPABASE_URL` | Pages env var, per environment | public |
-| `VITE_SUPABASE_ANON_KEY` | Pages env var, per environment | **public by design** — RLS protects the data |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Pages env var, per environment | **public by design** — RLS protects the data; publishable (`sb_publishable_…`) keys replace the deprecated JWT-based `anon` key |
 | `SUPABASE_ACCESS_TOKEN`, project refs | GitHub Actions secrets | CI only |
 | `CLOUDFLARE_API_TOKEN`, account id | GitHub Actions secrets | CI only |
-| `service_role` key | GitHub Actions secrets, if ever needed | **never** in any `VITE_`-prefixed var — Vite inlines those into the bundle |
+| `service_role` / `sb_secret_…` key | GitHub Actions secrets, if ever needed | **never** in any `VITE_`-prefixed var — Vite inlines those into the bundle |
 
 Use **GitHub Environments** (`dev`, `production`) to scope secrets to the workflows that deploy to
 them, rather than one flat repository-wide bag. Production can then carry a required reviewer, which
@@ -770,6 +772,7 @@ Still open, with what this architecture contributes:
 
 | Version | Date | Change |
 |---|---|---|
+| 1.1.0 | 2026-08-25 | Minor — §6.2 and §2.2: the client-facing key is the Supabase **publishable** key (`sb_publishable_…`, `VITE_SUPABASE_PUBLISHABLE_KEY`) rather than the legacy JWT `anon` key, which is deprecated by end of 2026; secret-key naming updated to include `sb_secret_…`. No other decision changed. |
 | 1.0.1 | 2026-08-21 | Patch — §9 only. `AGENTS.md` collapsed to a pointer at both levels; repository layout and the note beneath it updated to match. No decision changed. |
 | 1.0.0 | 2026-08-21 | Initial architecture. Supabase over AWS; TypeScript end to end with no hand-written backend; PostgREST + RLS; Cloudflare Pages; TanStack Query with offline persistence; Vitest, pgTAP and Playwright; local/dev/prod on `feature → develop → main`; GitHub Actions for CI/CD; release-please for versioning. |
 
