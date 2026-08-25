@@ -47,6 +47,11 @@
 -- therefore dev@litmus.test / password123, matching what S-4.x flows and the
 -- Playwright suite will drive against.
 
+-- pgTAP is test infrastructure: seed.sql only ever runs locally after `db reset`,
+-- so installing the extension here keeps prod migrations clean while making every
+-- suite in supabase/tests runnable on a fresh reset.
+create extension if not exists pgtap with schema extensions;
+
 -- ---------------------------------------------------------------------------
 -- auth: the one local user (and the identity GoTrue matches on)
 -- ---------------------------------------------------------------------------
