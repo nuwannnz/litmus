@@ -191,3 +191,25 @@
     display: none;
   }
 }
+
+.auth-error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: #fbe0d2;
+  color: #8a3d1f;
+  font-size: 13px;
+}
+
+[data-theme='dark'] .auth-error {
+  background: rgba(243, 177, 140, 0.15);
+  color: #f3b18c;
+}
+
+.session-loading {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  color: var(--text-secondary);
+  font-size: 14px;
+}

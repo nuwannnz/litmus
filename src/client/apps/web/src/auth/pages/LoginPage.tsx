@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { appPaths } from '@litmus/core';
-import { Button, CheckMark, Field } from '@litmus/ui';
+import { Button, Field } from '@litmus/ui';
 import { AuthLayout } from '../components/AuthLayout';
 import { OAuthRow } from '../components/OAuthRow';
 import { PasswordField } from '../components/PasswordField';
@@ -11,19 +11,25 @@ export function LoginPage() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [email, setEmail] = useState('nuwan@litmus.so');
-  const [password, setPassword] = useState('demopassword');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const from = (location.state as { from?: string } | null)?.from ?? appPaths.week;
 
-  const enter = () => {
-    signIn(email);
-    navigate(from, { replace: true });
-  };
-
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-    enter();
+    setError(null);
+    setBusy(true);
+    try {
+      await signIn(email, password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign-in failed — try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -38,7 +44,7 @@ export function LoginPage() {
         </>
       }
     >
-      <OAuthRow onUse={enter} />
+      <OAuthRow />
 
       <form onSubmit={submit}>
         <Field caps={false} label="Email">
@@ -58,14 +64,17 @@ export function LoginPage() {
         </Field>
 
         <div className="field-row">
-          <label>
-            <CheckMark checked /> Remember me
-          </label>
           <Link to={appPaths.forgotPassword}>Forgot password?</Link>
         </div>
 
-        <Button type="submit" variant="primary" size="lg" block>
-          Sign in
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <Button type="submit" variant="primary" size="lg" block disabled={busy}>
+          {busy ? 'Signing in…' : 'Sign in'}
         </Button>
       </form>
     </AuthLayout>

@@ -13,15 +13,25 @@ export function RegisterPage() {
   const [name, setName] = useState('Nuwan K.');
   const [email, setEmail] = useState('nuwan@litmus.so');
   const [password, setPassword] = useState('demopassword');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const enter = () => {
-    signUp(name, email);
-    navigate(appPaths.week, { replace: true });
+  const enter = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      await signUp(name, email, password);
+      navigate(appPaths.week, { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed — try again.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    enter();
+    void enter();
   };
 
   return (
@@ -36,7 +46,7 @@ export function RegisterPage() {
         </>
       }
     >
-      <OAuthRow onUse={enter} />
+      <OAuthRow />
 
       <form onSubmit={submit}>
         <Field caps={false} label="Full name">
@@ -74,8 +84,14 @@ export function RegisterPage() {
           </label>
         </div>
 
-        <Button type="submit" variant="primary" size="lg" block>
-          Create account
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <Button type="submit" variant="primary" size="lg" block disabled={busy}>
+          {busy ? 'Creating account…' : 'Create account'}
         </Button>
       </form>
     </AuthLayout>

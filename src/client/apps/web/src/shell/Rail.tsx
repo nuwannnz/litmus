@@ -44,7 +44,7 @@ export function Rail({ modules, onOpenPalette }: RailProps) {
           data-color="peach"
           title={`${user?.name ?? 'Account'} — sign out`}
           aria-label="Sign out"
-          onClick={signOut}
+          onClick={() => void signOut()}
         >
           {user?.initials ?? 'NK'}
         </button>
