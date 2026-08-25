@@ -150,12 +150,19 @@ jobs:
         with:
           version: 2.115.0
 
-      # Applies every migration, then seed.sql (which installs pgTAP), then
-      # starts postgres on the [db] port from supabase/config.toml (54322).
-      # Docker is preinstalled on ubuntu-latest, so no extra setup. A fresh
-      # reset per run means the suites are exercised against exactly what a
-      # developer gets from `supabase db reset` locally.
-      - name: Reset the local database (migrations + seed + postgres up)
+      # `db reset` refuses to run against a stopped stack ("supabase start is
+      # not running"), and on a fresh CI runner nothing is running — so the
+      # stack has to come up first. Plain `supabase start` is enough: the
+      # suites only need postgres on 54322, and this matches the issue text
+      # (S-2.12: "supabase start + supabase test db as a ci.yml job").
+      - name: Start the local stack
+        run: supabase start
+
+      # Re-applies every migration, then seed.sql (which installs pgTAP), so
+      # the state is exactly what a developer gets from `supabase db reset`
+      # locally — start alone would leave whatever images bootstrapped with.
+      # Docker is preinstalled on ubuntu-latest, so no extra setup.
+      - name: Reset the database (migrations + seed)
         run: supabase db reset
 
       # The verified-working path: run_tests.sh loops over every suite in
