@@ -38,15 +38,15 @@ Start dates assume Sprint 1 begins Monday **2026-08-31**. Total: 26 sprints,
 
 ### Milestone 0.2.0 Signed in for real
 
-| Sprint | Starts     | Stories                                                                                                             | Days |
-| ------ | ---------- | ------------------------------------------------------------------------------------------------------------------- | ---- |
-| 4      | 2026-09-21 | ✅ S-3.3 merge Task and ProjectTask (**precedes every surface migration**) · ✅ S-3.6 UUIDv7 keys                   | 3.5  |
-| 5      | 2026-09-28 | ✅ S-3.4 TanStack Query provider (#129) · ✅ S-3.8 libs/api test harness (#130) · ✅ S-3.5 partial mutations (#131) | 3.75 |
-| 6      | 2026-10-05 | S-6.1 week query from real data (**pulled forward from 0.3.0**) · S-4.1 real sessions · S-4.3 register              | 3.0  |
-| 7      | 2026-10-12 | S-3.7 retire the workspace reducer · S-5.1 rail: Settings entry, Notes disabled                                     | 3.5  |
-| 8      | 2026-10-19 | S-4.2 sign in · S-4.4 password reset · S-4.5 close registration · S-4.7 sign-out clears local data                  | 3.5  |
-| 9      | 2026-10-26 | S-4.6 Google and Apple sign-in · S-4.8 refresh-token rotation · S-5.3 theme on Account · S-5.5 about row            | 3.5  |
-| 10     | 2026-11-02 | S-5.2 mobile tab bar · S-5.4 Settings screen · S-5.6 landing/palette decision                                       | 3.0  |
+| Sprint | Starts     | Stories                                                                                                                             | Days |
+| ------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| 4      | 2026-09-21 | ✅ S-3.3 merge Task and ProjectTask (**precedes every surface migration**) · ✅ S-3.6 UUIDv7 keys                                   | 3.5  |
+| 5      | 2026-09-28 | ✅ S-3.4 TanStack Query provider (#129) · ✅ S-3.8 libs/api test harness (#130) · ✅ S-3.5 partial mutations (#131)                 | 3.75 |
+| 6      | 2026-10-05 | ✅ S-6.1 week query from real data (**pulled forward from 0.3.0**, #133) · ✅ S-4.1 real sessions (#134) · ✅ S-4.3 register (#135) | 3.0  |
+| 7      | 2026-10-12 | S-3.7 retire the workspace reducer · S-5.1 rail: Settings entry, Notes disabled                                                     | 3.5  |
+| 8      | 2026-10-19 | S-4.2 sign in · S-4.4 password reset · S-4.5 close registration · S-4.7 sign-out clears local data                                  | 3.5  |
+| 9      | 2026-10-26 | S-4.6 Google and Apple sign-in · S-4.8 refresh-token rotation · S-5.3 theme on Account · S-5.5 about row                            | 3.5  |
+| 10     | 2026-11-02 | S-5.2 mobile tab bar · S-5.4 Settings screen · S-5.6 landing/palette decision                                                       | 3.0  |
 
 ### Milestone 0.3.0 The week is real
 
@@ -84,7 +84,7 @@ Start dates assume Sprint 1 begins Monday **2026-08-31**. Total: 26 sprints,
 | 25     | 2027-02-15 | S-12.5 warm load under 1 s · S-12.7 journey specs UJ-1…UJ-5 · S-13.6 unpause guard                                        | 4.0  |
 | 26     | 2027-02-22 | S-12.8 offline-reconnect E2E · S-12.9 responsive sweep · S-13.7 domain + TLS · **S-13.8 cut 1.0.0**                       | 2.75 |
 
-## 3. Status as of 2026-08-25 (end of Sprint 5's work)
+## 3. Status as of 2026-08-25 (end of Sprint 6's work)
 
 Tracked against GitHub issues and the "Litmus board" project (status **Done**):
 
@@ -109,6 +109,15 @@ Tracked against GitHub issues and the "Litmus board" project (status **Done**):
   columns on the patch types). **With S-13.1 closed, Milestone 0.1.0's exit
   criteria in `docs/epics.md` §4 are met** — the milestone can be cut when a
   release is wanted, not when its sprints end.
+- **Sprint 6 — complete** (finished early, 2026-08-25; all three stories in one
+  sitting, no carry-over). S-6.1 by PR #133 (the Week Board reads `tasks` by an
+  inclusive `due_date` range over real data — the first surface on server
+  state, proving the pattern for S-3.7 — with create and drag-to-move writing
+  through the API), S-4.1 by PR #134 (Supabase Auth through `libs/api`;
+  `RequireAuth` gates on a restored session; sessions are per-device JWT pairs,
+  concurrent by construction), and S-4.3 by PR #135 (register collects name,
+  email and password under the PRD copy with a genuinely required consent
+  checkbox; success lands on the Week Board's empty state).
 - **Completed outside this plan's sprints:** S-1.1–S-1.5 (tooling), S-2.1–S-2.6
   (schema foundation) — these predate the sprint cadence — and S-13.4
   release-please.yml, which was never slotted.
