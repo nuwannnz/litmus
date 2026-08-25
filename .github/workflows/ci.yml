@@ -176,12 +176,75 @@ jobs:
       - name: Run the pgTAP suites
         run: bash supabase/tests/run_tests.sh
 
+  # The schema is the contract (architecture §7.1): libs/api's generated
+  # types must always describe what the committed migrations produce. A
+  # migration merged without regenerating database.types.ts fails here, so a
+  # renamed column surfaces as a typecheck failure in review instead of a
+  # runtime error in production.
+  db-types:
+    name: Database types no-diff
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The committed file has to pass the same formatting gates as everything
+      # else in src/client (it is prettier --write'd on generation locally), so
+      # npm is needed here to run the workspace's own Prettier — pinned by the
+      # lockfile — over the fresh output before diffing. Same cache pattern as
+      # the client job above.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/client/package-lock.json
+
+      - run: npm ci
+        working-directory: src/client
+
+      # Same pin as the pgTAP job above — the generator's output format can
+      # change between CLI releases, so "green" has to mean one version.
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.115.0
+
+      # Identical stack bring-up to the pgTAP job: start, then reset so the
+      # schema is migrations + seed, exactly what a developer gets locally.
+      # Commands run from the repo root, where supabase/ lives.
+      - name: Start the local stack
+        run: supabase start
+
+      - name: Reset the database (migrations + seed)
+        run: supabase db reset
+
+      - name: Regenerate database.types.ts
+        run: >
+          supabase gen types typescript --local
+          > src/client/libs/api/src/database.types.ts
+
+      # Same normalization the developer applies locally; without it the diff
+      # would only ever show Prettier noise (quote style, semicolons).
+      - name: Format the generated file
+        run: npx prettier --write libs/api/src/database.types.ts
+        working-directory: src/client
+
+      - name: Fail if the committed types are stale
+        run: |
+          if ! git diff --exit-code -- src/client/libs/api/src/database.types.ts; then
+            echo "::error::src/client/libs/api/src/database.types.ts is out of date with supabase/migrations/." \
+              "Regenerate it with 'npx supabase gen types typescript --local > src/client/libs/api/src/database.types.ts'" \
+              "from the repo root and commit the file."
+            exit 1
+          fi
+
 # Vitest (docs/architecture.md §7.2), ESLint and the pgTAP suites (§7.3 — see
 # the `db` job above) now run in this workflow. Still not present, and still
 # deliberately not stubbed — a workflow that fails until the tooling catches
 # up trains you to ignore red. Added as each lands:
 #   ✓ pgTAP via supabase CLI  (§7.3 — the RLS suite; mandatory once RLS exists)
+#   ✓ supabase gen types      (§7.1 — the no-diff check; the `db-types` job)
 #   - Playwright e2e          (§7.4)
-#   - supabase gen types      (§7.1 — assert regenerating produces no diff)
 # Deployment lives in deploy-dev.yml / deploy-prod.yml (§6.3), which need the
 # Supabase and Cloudflare projects to exist first.

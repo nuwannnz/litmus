@@ -1,13 +1,14 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+import type { Database } from './database.types';
+
 /**
  * The Supabase client type the rest of the app programs against.
  *
- * Deliberately generic-free today: generated `database.types.ts` arrives in
- * S-3.2 and swaps in as `SupabaseClient<LitmusDatabase>` here — a one-line
- * change, because every consumer already goes through this alias.
+ * Typed with the generated `Database` schema, so a column renamed in a
+ * migration is a typecheck failure here rather than a runtime error.
  */
-export type LitmusSupabaseClient = SupabaseClient;
+export type LitmusSupabaseClient = SupabaseClient<Database>;
 
 function readEnv(name: string): string | undefined {
   return import.meta.env[name] as string | undefined;
@@ -37,5 +38,5 @@ export function createSupabaseClient(): LitmusSupabaseClient {
     );
   }
 
-  return createClient(url, key);
+  return createClient<Database>(url, key);
 }
