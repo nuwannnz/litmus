@@ -138,13 +138,22 @@ export interface MockSupabaseClient extends LitmusSupabaseClient {
   readonly $selects: Array<RecordedSelect>;
 }
 
+export interface MockAuthUser {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, unknown>;
+}
+
 export interface MockClientOptions {
   tables?: Record<string, FakeTableConfig>;
   /**
-   * The user `auth.getUser()` resolves with — set it when a spec exercises a
-   * path that needs a session (RLS-scoped inserts, for instance).
+   * The signed-in user the fake auth service resolves with — set it when a
+   * spec exercises a path that needs a session (RLS-scoped inserts, auth
+   * wrappers).
    */
-  user?: { id: string; email?: string } | null;
+  user?: MockAuthUser | null;
+  /** When set, every credential-bearing auth call rejects with this message. */
+  authError?: string;
 }
 
 /**
@@ -158,15 +167,43 @@ export function createMockSupabaseClient(options: MockClientOptions = {}): MockS
   const inserts: Array<RecordedInsert> = [];
   const selects: Array<RecordedSelect> = [];
 
+  const user = options.user ?? null;
+  const session = user ? { user } : null;
+  const fail = () => (options.authError ? { message: options.authError } : null);
+
   const client = {
     from(table: string) {
       return new FakeBuilder(table, options.tables?.[table], updates, inserts, selects);
     },
     auth: {
       getUser: async () => ({
-        data: { user: options.user ?? null },
-        error: options.user ? null : { message: 'no session', status: 401 },
+        data: { user },
+        error: user ? null : { message: 'no session', status: 401 },
       }),
+      getSession: async () => ({ data: { session }, error: null }),
+      signInWithPassword: async (credentials: { email: string }) => ({
+        data: { user: fail() ? null : { ...user, email: credentials.email, id: user?.id ?? 'u1' } },
+        error: fail(),
+      }),
+      signUp: async (input: { email: string; options?: { data?: Record<string, unknown> } }) => ({
+        data: {
+          user: fail()
+            ? null
+            : {
+                id: 'u-new',
+                email: input.email,
+                user_metadata: input.options?.data,
+              },
+        },
+        error: fail(),
+      }),
+      signOut: async () => ({ error: fail() }),
+      onAuthStateChange: (
+        listener: (event: string, session: unknown) => void,
+      ): { data: { subscription: { unsubscribe: () => void } } } => {
+        void listener;
+        return { data: { subscription: { unsubscribe: () => undefined } } };
+      },
     },
     $updates: updates,
     $inserts: inserts,

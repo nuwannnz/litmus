@@ -1,5 +1,28 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import { CURRENT_USER, PEOPLE } from '@litmus/domain';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
+import {
+  getAccount,
+  onAccountChange,
+  signIn as apiSignIn,
+  signOut as apiSignOut,
+  signUp as apiSignUp,
+  useSupabase,
+} from '@litmus/api';
+
+/**
+ * S-4.1 — real sessions over Supabase Auth. The fake localStorage session is
+ * gone: the session is Supabase's JWT pair, persisted per device by the
+ * client library itself, so signing in on one device never ends another's
+ * session. `initializing` covers the restore-from-storage moment before the
+ * first session read resolves.
+ */
 
 export interface AuthUser {
   name: string;
@@ -9,14 +32,14 @@ export interface AuthUser {
 
 interface AuthValue {
   user: AuthUser | null;
-  signIn: (email: string) => void;
-  signUp: (name: string, email: string) => void;
-  signOut: () => void;
+  /** True until the initial session lookup settles — gates route guards. */
+  initializing: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
-
-const STORAGE_KEY = 'litmus:session';
 
 const initials = (name: string): string =>
   name
@@ -26,46 +49,57 @@ const initials = (name: string): string =>
     .map((part) => part.charAt(0).toUpperCase())
     .join('') || 'U';
 
-function readStoredUser(): AuthUser | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as AuthUser) : null;
-  } catch {
-    return null;
-  }
+function toUser(account: { email: string | null; fullName: string | null }): AuthUser {
+  const fallback = account.email?.split('@')[0] ?? 'Account';
+  const name = account.fullName ?? fallback;
+  return { name, email: account.email ?? '', initials: initials(name) };
 }
 
-/**
- * Session state for the UI build. Any credentials are accepted and the session
- * is kept in localStorage; the real token exchange lands with the auth API.
- */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(readStoredUser);
+  const supabase = useSupabase();
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [initializing, setInitializing] = useState(true);
 
-  const persist = useCallback((next: AuthUser | null) => {
-    setUser(next);
-    if (next) localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    else localStorage.removeItem(STORAGE_KEY);
-  }, []);
+  // Restore any persisted session once, then follow every future change —
+  // sign-ins elsewhere in this tab, token refreshes, sign-outs.
+  useEffect(() => {
+    let active = true;
+    void getAccount(supabase)
+      .then((account) => {
+        if (active) setUser(account ? toUser(account) : null);
+      })
+      .finally(() => {
+        if (active) setInitializing(false);
+      });
+    const unsubscribe = onAccountChange(supabase, (account) =>
+      setUser(account ? toUser(account) : null),
+    );
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [supabase]);
 
   const signIn = useCallback(
-    (email: string) => {
-      const seeded = PEOPLE[CURRENT_USER];
-      persist({ name: seeded.name, email, initials: seeded.id });
+    async (email: string, password: string) => {
+      setUser(toUser(await apiSignIn(supabase, email, password)));
     },
-    [persist],
+    [supabase],
   );
 
   const signUp = useCallback(
-    (name: string, email: string) => {
-      persist({ name, email, initials: initials(name) });
+    async (name: string, email: string, password: string) => {
+      setUser(toUser(await apiSignUp(supabase, { fullName: name, email, password })));
     },
-    [persist],
+    [supabase],
   );
 
-  const signOut = useCallback(() => persist(null), [persist]);
+  const signOut = useCallback(async () => apiSignOut(supabase), [supabase]);
 
-  const value = useMemo(() => ({ user, signIn, signUp, signOut }), [user, signIn, signUp, signOut]);
+  const value = useMemo(
+    () => ({ user, initializing, signIn, signUp, signOut }),
+    [user, initializing, signIn, signUp, signOut],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

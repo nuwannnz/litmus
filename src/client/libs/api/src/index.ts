@@ -2,6 +2,9 @@ export * from './client';
 export type { Database, Tables, TablesInsert, TablesUpdate, Enums } from './database.types';
 export type { TaskRow, ProjectRow, SubtaskRow, CategoryRow } from './rows';
 
+// Auth (S-4.1): real sessions over Supabase Auth.
+export { signIn, signUp, signOut, getAccount, onAccountChange, type AuthAccount } from './auth';
+
 // Query layer (S-3.4): provider, client defaults, key scheme, read hooks.
 export { ApiProvider, useSupabase, type ApiProviderProps } from './query/ApiProvider';
 export { createQueryClient } from './query/queryClient';
