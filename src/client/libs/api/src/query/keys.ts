@@ -35,3 +35,8 @@ export const projectKeys = {
   /** One project by id. */
   detail: (id: string) => ['projects', id] as const,
 };
+
+/** Everything about categories — global reference data, so only the list. */
+export const categoryKeys = {
+  all: ['categories'] as const,
+};

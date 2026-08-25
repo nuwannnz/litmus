@@ -6,6 +6,7 @@ import { RegisterPage } from '../auth/pages/RegisterPage';
 import { ForgotPasswordPage } from '../auth/pages/ForgotPasswordPage';
 import { RequireAuth } from '../auth/RequireAuth';
 import { AppShell } from '../shell/AppShell';
+import { AppApi } from './AppApi';
 import { APP_MODULES } from './modules';
 
 const firstModule = APP_MODULES[0];
@@ -16,7 +17,14 @@ export const routes: RouteObject[] = [
   { path: appPaths.register, element: <RegisterPage /> },
   { path: appPaths.forgotPassword, element: <ForgotPasswordPage /> },
   {
-    element: <RequireAuth />,
+    // The data layer lives inside the authenticated tree: queries assume a
+    // signed-in user (RLS scopes everything), and the landing/auth screens
+    // have no need for a Supabase connection.
+    element: (
+      <AppApi>
+        <RequireAuth />
+      </AppApi>
+    ),
     children: [
       {
         path: appPaths.app,

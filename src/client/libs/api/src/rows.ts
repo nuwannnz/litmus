@@ -13,3 +13,4 @@ import type { Database } from './database.types';
 export type TaskRow = Database['public']['Tables']['tasks']['Row'];
 export type ProjectRow = Database['public']['Tables']['projects']['Row'];
 export type SubtaskRow = Database['public']['Tables']['subtasks']['Row'];
+export type CategoryRow = Database['public']['Tables']['categories']['Row'];

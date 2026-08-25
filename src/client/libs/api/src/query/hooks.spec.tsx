@@ -5,10 +5,13 @@ import { describe, expect, it } from 'vitest';
 import {
   ApiProvider,
   createQueryClient,
+  useCategories,
+  useInsertTask,
   useProject,
   useProjects,
   useTask,
   useTasks,
+  useWeekTasks,
 } from '../index';
 import { createMockSupabaseClient } from '../testing';
 
@@ -120,5 +123,75 @@ describe('S-3.4 read hooks', () => {
     );
     const { result } = renderHook(() => useTasks(), { wrapper });
     await waitFor(() => expect(result.current).toEqual([]));
+  });
+});
+
+describe('S-6.1 week query', () => {
+  const range = { from: '2026-08-10', to: '2026-08-16' };
+
+  function setup(
+    tableRows: Record<string, unknown[]>,
+    options?: Parameters<typeof createMockSupabaseClient>[0],
+  ) {
+    const supabase = createMockSupabaseClient({
+      ...options,
+      tables: Object.fromEntries(
+        Object.entries(tableRows).map(([table, rows]) => [table, { rows }]),
+      ),
+    });
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <ApiProvider queryClient={createQueryClient()} supabase={supabase}>
+        {children}
+      </ApiProvider>
+    );
+    return { supabase, wrapper };
+  }
+
+  it('FR-9: filters the week slice by an inclusive due_date range and no soft-deletes', async () => {
+    const { supabase, wrapper } = setup({ tasks: [] });
+    renderHook(() => useWeekTasks(range), { wrapper });
+    await waitFor(() => expect(supabase.$selects).toHaveLength(1));
+    expect(supabase.$selects[0]?.filters).toEqual([
+      { op: 'is', column: 'deleted_at', value: null },
+      { op: 'gte', column: 'due_date', value: '2026-08-10' },
+      { op: 'lte', column: 'due_date', value: '2026-08-16' },
+    ]);
+  });
+
+  it('FR-9: resolves only rows inside the requested week', async () => {
+    const { wrapper } = setup({ tasks: [taskRow('t1', 'In week')] });
+    const { result } = renderHook(() => useWeekTasks(range), { wrapper });
+    await waitFor(() => expect(result.current).toHaveLength(1));
+    expect(result.current[0]?.id).toBe('t1');
+  });
+
+  it('FR-37: loads category reference data ordered by position', async () => {
+    const { supabase, wrapper } = setup({ categories: [] });
+    renderHook(() => useCategories(), { wrapper });
+    await waitFor(() => expect(supabase.$selects).toHaveLength(1));
+    expect(supabase.$selects[0]?.table).toBe('categories');
+  });
+
+  it('creates a task with a caller-minted id and the session user as owner', async () => {
+    const { supabase, wrapper } = setup({ tasks: [] }, { user: { id: 'u1' } });
+    const { result } = renderHook(() => useInsertTask(), { wrapper });
+    await result.current.mutateAsync({ id: 't9', title: 'New task', due_date: '2026-08-12' });
+    await waitFor(() => expect(supabase.$inserts).toHaveLength(1));
+    expect(supabase.$inserts[0]?.table).toBe('tasks');
+    expect(supabase.$inserts[0]?.row).toMatchObject({
+      id: 't9',
+      title: 'New task',
+      due_date: '2026-08-12',
+      user_id: 'u1',
+    });
+  });
+
+  it('refuses to create a task without a session', async () => {
+    const { supabase, wrapper } = setup({ tasks: [] }, { user: null });
+    const { result } = renderHook(() => useInsertTask(), { wrapper });
+    await expect(result.current.mutateAsync({ id: 't9', title: 'New task' })).rejects.toThrow(
+      'Sign in to create a task.',
+    );
+    expect(supabase.$inserts).toHaveLength(0);
   });
 });
