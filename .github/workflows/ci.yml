@@ -134,11 +134,53 @@ jobs:
       - name: Build
         run: npm run build
 
-# Vitest (docs/architecture.md §7.2) and ESLint now run above, scoped by
-# `nx affected`. Still not present, and still deliberately not stubbed — a
-# workflow that fails until the tooling catches up trains you to ignore red.
-# Added as each lands:
-#   - pgTAP via supabase CLI  (§7.3 — the RLS suite; mandatory once RLS exists)
+  db:
+    name: pgTAP suites
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      # No history needed — this job only runs the suites as they exist on the
+      # merge commit; it never diffs against a base ref like `nx affected` does.
+      - uses: actions/checkout@v4
+
+      # Pinned so a CLI release cannot change what "green" means mid-flight.
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.115.0
+
+      # `db reset` refuses to run against a stopped stack ("supabase start is
+      # not running"), and on a fresh CI runner nothing is running — so the
+      # stack has to come up first. Plain `supabase start` is enough: the
+      # suites only need postgres on 54322, and this matches the issue text
+      # (S-2.12: "supabase start + supabase test db as a ci.yml job").
+      - name: Start the local stack
+        run: supabase start
+
+      # Re-applies every migration, then seed.sql (which installs pgTAP), so
+      # the state is exactly what a developer gets from `supabase db reset`
+      # locally — start alone would leave whatever images bootstrapped with.
+      # Docker is preinstalled on ubuntu-latest, so no extra setup.
+      - name: Reset the database (migrations + seed)
+        run: supabase db reset
+
+      # The verified-working path: run_tests.sh loops over every suite in
+      # supabase/tests/ with psql and exits non-zero if any suite fails, so a
+      # migration that drops or weakens an RLS policy turns its assertions
+      # red here and fails the PR. `supabase test db` was considered instead,
+      # but it shells out to pg_prove (TAP::Parser::SourceHandler::pgTAP),
+      # which is not part of the CLI's bundled db image, whereas psql is
+      # preinstalled on the runner. psql itself reports each failing test via
+      # ON_ERROR_STOP, which is all CI needs.
+      - name: Run the pgTAP suites
+        run: bash supabase/tests/run_tests.sh
+
+# Vitest (docs/architecture.md §7.2), ESLint and the pgTAP suites (§7.3 — see
+# the `db` job above) now run in this workflow. Still not present, and still
+# deliberately not stubbed — a workflow that fails until the tooling catches
+# up trains you to ignore red. Added as each lands:
+#   ✓ pgTAP via supabase CLI  (§7.3 — the RLS suite; mandatory once RLS exists)
 #   - Playwright e2e          (§7.4)
 #   - supabase gen types      (§7.1 — assert regenerating produces no diff)
 # Deployment lives in deploy-dev.yml / deploy-prod.yml (§6.3), which need the
