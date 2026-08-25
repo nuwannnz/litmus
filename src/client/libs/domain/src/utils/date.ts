@@ -57,6 +57,17 @@ export function buildWeek(startIso: string, offset: number, todayIso: string): W
   });
 }
 
+/**
+ * The Monday of the week containing `iso` (FR-9's weeks run Mon–Sun). The
+ * Week Board derives every displayed week from this plus an offset — no more
+ * fixed seed dates once the API supplies real data (S-6.1).
+ */
+export function startOfWeek(iso: string): string {
+  const day = parseIso(iso).getDay();
+  const shift = (day + 6) % 7; // Sunday (0) wraps to the previous Monday.
+  return toIso(addDays(parseIso(iso), -shift));
+}
+
 /** `Aug 10 – 16, 2026`, collapsing the month when both ends share one. */ export function formatWeekLabel(
   days: WeekDay[],
 ): string {

@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { addDays, buildWeek, formatWeekLabel, longDayName, parseIso, toIso } from './date';
+import {
+  addDays,
+  buildWeek,
+  formatWeekLabel,
+  longDayName,
+  parseIso,
+  startOfWeek,
+  toIso,
+} from './date';
 
 /**
  * These helpers deliberately work in *local* calendar time: a day column is a
@@ -149,6 +157,24 @@ describe('buildWeek', () => {
       '2027-01-02',
       '2027-01-03',
     ]);
+  });
+});
+
+describe('startOfWeek', () => {
+  it('FR-9: returns the Monday of the week containing the date', () => {
+    expect(startOfWeek('2026-08-10')).toBe('2026-08-10'); // a Monday maps to itself
+    expect(startOfWeek('2026-08-13')).toBe('2026-08-10');
+    expect(startOfWeek('2026-08-16')).toBe('2026-08-10'); // Sunday stays in its own week
+  });
+
+  it('FR-9: wraps a Sunday back to the previous Monday', () => {
+    expect(startOfWeek('2026-08-16')).not.toBe('2026-08-17');
+    expect(startOfWeek('2026-11-01')).toBe('2026-10-26');
+  });
+
+  it('FR-9: spans month and year boundaries', () => {
+    expect(startOfWeek('2026-09-01')).toBe('2026-08-31');
+    expect(startOfWeek('2027-01-01')).toBe('2026-12-28');
   });
 });
 

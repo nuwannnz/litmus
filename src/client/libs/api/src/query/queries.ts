@@ -1,5 +1,5 @@
 import type { LitmusSupabaseClient } from '../client';
-import type { ProjectRow, TaskRow } from '../rows';
+import type { CategoryRow, ProjectRow, TaskRow } from '../rows';
 
 /**
  * The fetchers behind the read hooks — plain async functions taking the
@@ -18,6 +18,33 @@ export async function fetchTasks(client: LitmusSupabaseClient): Promise<TaskRow[
     .select('*')
     .is('deleted_at', null)
     .order('created_at');
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * The Week Board slice (FR-9, S-6.1): tasks whose `due_date` falls inside one
+ * Monday→Sunday range. The bounds are inclusive ISO dates computed by the
+ * caller — the query stays a pure function of them.
+ */
+export async function fetchWeekTasks(
+  client: LitmusSupabaseClient,
+  range: { from: string; to: string },
+): Promise<TaskRow[]> {
+  const { data, error } = await client
+    .from('tasks')
+    .select('*')
+    .is('deleted_at', null)
+    .gte('due_date', range.from)
+    .lte('due_date', range.to)
+    .order('created_at');
+  if (error) throw error;
+  return data;
+}
+
+/** The global category reference data (FR-37) — readable by every signed-in user. */
+export async function fetchCategories(client: LitmusSupabaseClient): Promise<CategoryRow[]> {
+  const { data, error } = await client.from('categories').select('*').order('position');
   if (error) throw error;
   return data;
 }

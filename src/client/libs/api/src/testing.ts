@@ -34,6 +34,12 @@ export interface RecordedUpdate {
   filters: Array<{ op: string; column: string; value: unknown }>;
 }
 
+export interface RecordedInsert {
+  table: string;
+  /** Exactly what `.insert()` was handed, session fields included. */
+  row: Record<string, unknown>;
+}
+
 export interface RecordedSelect {
   table: string;
   filters: Array<{ op: string; column: string; value: unknown }>;
@@ -48,11 +54,13 @@ interface FilterCall {
 class FakeBuilder {
   readonly filters: FilterCall[] = [];
   patch: Record<string, unknown> | undefined;
+  row: Record<string, unknown> | undefined;
 
   constructor(
     private readonly table: string,
     private readonly config: FakeTableConfig | undefined,
     private readonly updates: Array<RecordedUpdate>,
+    private readonly inserts: Array<RecordedInsert>,
     private readonly selects: Array<RecordedSelect>,
   ) {}
 
@@ -65,6 +73,11 @@ class FakeBuilder {
     return this;
   }
 
+  insert(row: Record<string, unknown>): this {
+    this.row = row;
+    return this;
+  }
+
   eq(column: string, value: unknown): this {
     this.filters.push({ op: 'eq', column, value });
     return this;
@@ -72,6 +85,16 @@ class FakeBuilder {
 
   is(column: string, value: unknown): this {
     this.filters.push({ op: 'is', column, value });
+    return this;
+  }
+
+  gte(column: string, value: unknown): this {
+    this.filters.push({ op: 'gte', column, value });
+    return this;
+  }
+
+  lte(column: string, value: unknown): this {
+    this.filters.push({ op: 'lte', column, value });
     return this;
   }
 
@@ -92,6 +115,8 @@ class FakeBuilder {
           patch: this.patch,
           filters: [...this.filters],
         });
+      } else if (this.row !== undefined) {
+        this.inserts.push({ table: this.table, row: this.row });
       } else {
         this.selects.push({ table: this.table, filters: [...this.filters] });
       }
@@ -107,29 +132,44 @@ class FakeBuilder {
 export interface MockSupabaseClient extends LitmusSupabaseClient {
   /** Every `.update()` flushed through the fake, in call order. */
   readonly $updates: Array<RecordedUpdate>;
+  /** Every `.insert()` flushed through the fake, in call order. */
+  readonly $inserts: Array<RecordedInsert>;
   /** Every completed `.select()` chain, in resolution order. */
   readonly $selects: Array<RecordedSelect>;
 }
 
 export interface MockClientOptions {
   tables?: Record<string, FakeTableConfig>;
+  /**
+   * The user `auth.getUser()` resolves with — set it when a spec exercises a
+   * path that needs a session (RLS-scoped inserts, for instance).
+   */
+  user?: { id: string; email?: string } | null;
 }
 
 /**
  * Build a mock client whose `from(table)` hands back a chain resolving with
- * the table's configured rows. The `$updates`/`$selects` records are what
- * specs assert on — most importantly `$updates[n].patch`, which must contain
- * only the changed fields (S-3.5).
+ * the table's configured rows. The `$updates`/`$inserts`/`$selects` records
+ * are what specs assert on — most importantly `$updates[n].patch`, which must
+ * contain only the changed fields (S-3.5).
  */
 export function createMockSupabaseClient(options: MockClientOptions = {}): MockSupabaseClient {
   const updates: Array<RecordedUpdate> = [];
+  const inserts: Array<RecordedInsert> = [];
   const selects: Array<RecordedSelect> = [];
 
   const client = {
     from(table: string) {
-      return new FakeBuilder(table, options.tables?.[table], updates, selects);
+      return new FakeBuilder(table, options.tables?.[table], updates, inserts, selects);
+    },
+    auth: {
+      getUser: async () => ({
+        data: { user: options.user ?? null },
+        error: options.user ? null : { message: 'no session', status: 401 },
+      }),
     },
     $updates: updates,
+    $inserts: inserts,
     $selects: selects,
   };
 
