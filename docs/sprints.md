@@ -30,23 +30,23 @@ Start dates assume Sprint 1 begins Monday **2026-08-31**. Total: 26 sprints,
 
 ### Milestone 0.1.0 Foundations — finish the bottom half
 
-| Sprint | Starts     | Stories                                                                                                                                     | Days |
-| ------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
-| 1      | 2026-08-31 | ~~S-13.1 hosted Supabase + scoped secrets~~ _(carried over — see §3)_ · ✅ S-2.7 changes_since · ✅ S-2.8 pg_cron purge · ✅ S-2.9 seed.sql | 3.5  |
-| 2      | 2026-09-07 | ✅ S-2.10 pgTAP RLS isolation (**gates everything**) · ✅ S-2.11 pgTAP constraints/triggers/view                                            | 4.25 |
-| 3      | 2026-09-14 | ✅ S-2.12 CI runs pgTAP _(done early)_ · ✅ S-3.1 libs/api · ✅ S-3.2 generated types + no-diff check                                       | 3.0  |
+| Sprint | Starts     | Stories                                                                                                                                                  | Days |
+| ------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| 1      | 2026-08-31 | ✅ S-13.1 hosted Supabase + scoped secrets _(carried, closed 2026-08-25 — see §3)_ · ✅ S-2.7 changes_since · ✅ S-2.8 pg_cron purge · ✅ S-2.9 seed.sql | 3.5  |
+| 2      | 2026-09-07 | ✅ S-2.10 pgTAP RLS isolation (**gates everything**) · ✅ S-2.11 pgTAP constraints/triggers/view                                                         | 4.25 |
+| 3      | 2026-09-14 | ✅ S-2.12 CI runs pgTAP _(done early)_ · ✅ S-3.1 libs/api · ✅ S-3.2 generated types + no-diff check                                                    | 3.0  |
 
 ### Milestone 0.2.0 Signed in for real
 
-| Sprint | Starts     | Stories                                                                                                  | Days |
-| ------ | ---------- | -------------------------------------------------------------------------------------------------------- | ---- |
-| 4      | 2026-09-21 | ✅ S-3.3 merge Task and ProjectTask (**precedes every surface migration**) · ✅ S-3.6 UUIDv7 keys         | 3.5  |
-| 5      | 2026-09-28 | S-3.4 TanStack Query provider · S-3.8 libs/api test harness · S-3.5 partial mutations                    | 3.75 |
-| 6      | 2026-10-05 | S-6.1 week query from real data (**pulled forward from 0.3.0**) · S-4.1 real sessions · S-4.3 register   | 3.0  |
-| 7      | 2026-10-12 | S-3.7 retire the workspace reducer · S-5.1 rail: Settings entry, Notes disabled                          | 3.5  |
-| 8      | 2026-10-19 | S-4.2 sign in · S-4.4 password reset · S-4.5 close registration · S-4.7 sign-out clears local data       | 3.5  |
-| 9      | 2026-10-26 | S-4.6 Google and Apple sign-in · S-4.8 refresh-token rotation · S-5.3 theme on Account · S-5.5 about row | 3.5  |
-| 10     | 2026-11-02 | S-5.2 mobile tab bar · S-5.4 Settings screen · S-5.6 landing/palette decision                            | 3.0  |
+| Sprint | Starts     | Stories                                                                                                             | Days |
+| ------ | ---------- | ------------------------------------------------------------------------------------------------------------------- | ---- |
+| 4      | 2026-09-21 | ✅ S-3.3 merge Task and ProjectTask (**precedes every surface migration**) · ✅ S-3.6 UUIDv7 keys                   | 3.5  |
+| 5      | 2026-09-28 | ✅ S-3.4 TanStack Query provider (#129) · ✅ S-3.8 libs/api test harness (#130) · ✅ S-3.5 partial mutations (#131) | 3.75 |
+| 6      | 2026-10-05 | S-6.1 week query from real data (**pulled forward from 0.3.0**) · S-4.1 real sessions · S-4.3 register              | 3.0  |
+| 7      | 2026-10-12 | S-3.7 retire the workspace reducer · S-5.1 rail: Settings entry, Notes disabled                                     | 3.5  |
+| 8      | 2026-10-19 | S-4.2 sign in · S-4.4 password reset · S-4.5 close registration · S-4.7 sign-out clears local data                  | 3.5  |
+| 9      | 2026-10-26 | S-4.6 Google and Apple sign-in · S-4.8 refresh-token rotation · S-5.3 theme on Account · S-5.5 about row            | 3.5  |
+| 10     | 2026-11-02 | S-5.2 mobile tab bar · S-5.4 Settings screen · S-5.6 landing/palette decision                                       | 3.0  |
 
 ### Milestone 0.3.0 The week is real
 
@@ -84,23 +84,31 @@ Start dates assume Sprint 1 begins Monday **2026-08-31**. Total: 26 sprints,
 | 25     | 2027-02-15 | S-12.5 warm load under 1 s · S-12.7 journey specs UJ-1…UJ-5 · S-13.6 unpause guard                                        | 4.0  |
 | 26     | 2027-02-22 | S-12.8 offline-reconnect E2E · S-12.9 responsive sweep · S-13.7 domain + TLS · **S-13.8 cut 1.0.0**                       | 2.75 |
 
-## 3. Status as of 2026-08-25 (end of Sprint 4's work)
+## 3. Status as of 2026-08-25 (end of Sprint 5's work)
 
 Tracked against GitHub issues and the "Litmus board" project (status **Done**):
 
-- **Sprint 1 — mostly done.** S-2.7, S-2.8, S-2.9 are closed. **S-13.1 (hosted
-  Supabase projects + scoped secrets) is still open** and carries into Sprint 3 per
-  the working agreement; note S-2.10 gates all client work, so it takes priority.
+- **Sprint 1 — done.** S-2.7, S-2.8, S-2.9 are closed, and **S-13.1 (hosted
+  Supabase projects + scoped secrets) closed on 2026-08-25** after carrying
+  through Sprints 2–4: `litmus-dev`/`litmus-prod` exist, GitHub Environments
+  hold their scoped secrets, and production carries a required reviewer.
 - **Sprint 2 — complete.** S-2.10 and S-2.11 both closed.
 - **Sprint 3 — complete** (finished early, 2026-08-25). S-2.12 closed with Sprint 2's
   work; S-3.1 delivered by PR #123 (`libs/api` and the Supabase client) and S-3.2 by
-  PR #124 (committed `database.types.ts` plus the CI no-diff job). Milestone 0.1.0
-  remains open only because **S-13.1 is still open** — it carries forward as the first
-  item of the next sprint of work.
+  PR #124 (committed `database.types.ts` plus the CI no-diff job).
 - **Sprint 4 — complete** (2026-08-25). S-3.3 delivered by PR #126 (one `Task` in
   `libs/domain`; the reducer's `projectTasks` table retired; Week and Project boards
   render the same objects) and S-3.6 by PR #127 (RFC 9562 `uuidv7()` minted at every
-  create path). **S-13.1 still carries forward**, now into Sprint 5.
+  create path).
+- **Sprint 5 — complete** (started early, finished 2026-08-25; no carry-over now
+  that S-13.1 is closed). S-3.4 by PR #129 (`ApiProvider`, `createQueryClient`,
+  the written-down key scheme in `query/keys.ts`, and first read hooks against
+  real data), S-3.8 by PR #130 (`@litmus/api/testing` mock client at the module
+  boundary; `libs/api` joins the Vitest suite), S-3.5 by PR #131 (partial-only
+  `updateTask`/`updateProject`; whole-row writes are compile errors via `never`
+  columns on the patch types). **With S-13.1 closed, Milestone 0.1.0's exit
+  criteria in `docs/epics.md` §4 are met** — the milestone can be cut when a
+  release is wanted, not when its sprints end.
 - **Completed outside this plan's sprints:** S-1.1–S-1.5 (tooling), S-2.1–S-2.6
   (schema foundation) — these predate the sprint cadence — and S-13.4
   release-please.yml, which was never slotted.
