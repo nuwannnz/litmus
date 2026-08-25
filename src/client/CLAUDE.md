@@ -33,23 +33,34 @@ point for a branch cut from `develop`.
 
 ### Testing
 
-Vitest, and **`libs/domain` is the only project set up for it today**. The
-wiring is Nx's inferred-target style: `@nx/vite/plugin` (declared in `nx.json`)
-finds `libs/domain/vite.config.ts`, sees a `test` block, and infers a `test`
-target from it — no `targets` entry in any `package.json` to maintain.
-`apps/web/vite.config.ts` has no `test` block, so it gets no test target, and
-`nx run-many -t test` currently runs exactly one project. A library joins the
-suite by gaining its own `vite.config.ts` with a `test` block.
+Vitest. `npm test` fans out over every project with a test target — currently
+`libs/domain`, `libs/api`, `libs/ui` and `libs/week`. The wiring is Nx's
+inferred-target style: `@nx/vite/plugin` (declared in `nx.json`) finds each
+project's `vite.config.ts` and infers a `test` target from its `test` block —
+no `targets` entry in any `package.json` to maintain.
+
+Two setups:
+
+- **`libs/domain`** is pure TypeScript and keeps its own `environment: 'node'`
+  config.
+- **Everything else** composes the shared React/jsdom setup in
+  `vitest.react.config.ts` (`reactLibTestConfig`) — JSX via
+  `@vitejs/plugin-react`, jsdom, Testing Library matchers and between-test
+  cleanup. A library opts in with a two-line `vite.config.ts`; see
+  `libs/api/vite.config.ts`.
 
 Specs sit beside the code they cover (`libs/domain/src/utils/date.spec.ts`),
 and a test names the requirement it pins where it has one —
-`it('FR-10: …', …)`, per `docs/architecture.md` §7.5.
+`it('FR-10: …', …)`, per `docs/architecture.md` §7.5. `libs/api`'s specs mock
+the Supabase client through `@litmus/api/testing`
+(`createMockSupabaseClient`) — at the module boundary, never at HTTP (MSW
+against PostgREST's URL grammar is explicitly rejected by architecture §7.2);
+real database behaviour stays with pgTAP.
 
-What does **not** exist yet, so don't assume it: no component or DOM testing
-(no jsdom, no Testing Library) — nothing in `apps/web`, `libs/ui` or the
-feature libs is covered; no pgTAP against the local Postgres; no Playwright and
-no E2E project. `docs/architecture.md` §7 plans all three — read it as intent,
-and update this section when one of them actually lands.
+What does **not** exist yet: component/DOM coverage in `apps/web`,
+`libs/projects` or `libs/notes`, and Playwright/E2E (`apps/web-e2e`).
+`docs/architecture.md` §7 plans both — read as intent, and update this section
+when one of them lands.
 
 ### Linting and formatting
 
