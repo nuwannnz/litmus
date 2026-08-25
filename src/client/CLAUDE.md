@@ -60,8 +60,8 @@ warning fails the run, so fix it rather than leave it.
 
 The dependency direction documented under Architecture below is enforced, not
 just described. Each project's `package.json` carries an `nx.tags` entry
-(`type:domain`, `type:ui`, `type:core`, `type:feature`, `type:app`) and
-`@nx/enforce-module-boundaries` lets a tag depend only on the layers to its
+(`type:domain`, `type:api`, `type:ui`, `type:core`, `type:feature`, `type:app`)
+and `@nx/enforce-module-boundaries` lets a tag depend only on the layers to its
 left. All three feature modules share the one `type:feature` tag, which is
 absent from its own allow-list, so a feature module cannot import another.
 **A new library needs its tag** — an untagged project is unconstrained.
@@ -120,6 +120,7 @@ Nx monorepo, one shipped app today:
 
 ```
 apps/web/      the app — routing, auth, the shell, the landing page
+libs/api/      the Supabase client and configuration
 libs/ui/       design system: tokens, primitives, icons, theme, toasts
 libs/domain/   types, constants, seed data, pure helpers
 libs/core/     workspace state (reducer), the command registry, the module contract
@@ -128,9 +129,11 @@ libs/projects/ Projects dashboard + Project Detail
 libs/notes/    Notes tree + editor
 ```
 
-Dependencies run one way: `domain → ui → core → feature modules → apps/web`.
-Path aliases (`@litmus/ui`, `@litmus/domain`, `@litmus/core`, `@litmus/week`,
-`@litmus/projects`, `@litmus/notes`) are declared in `tsconfig.base.json`.
+Dependencies run one way: `domain → api → ui → core → feature modules →
+apps/web`. Path aliases (`@litmus/ui`, `@litmus/domain`, `@litmus/api`,
+`@litmus/core`, `@litmus/week`, `@litmus/projects`, `@litmus/notes`) are
+declared in `tsconfig.base.json`. `supabase-js` is imported only inside
+`libs/api` — feature modules go through it, never directly.
 
 **Feature modules are libraries, not folders inside the app.** Week,
 Projects and Notes each export a single `AppModule` descriptor (contract in
