@@ -8,3 +8,6 @@ export { createQueryClient } from './query/queryClient';
 export { taskKeys, projectKeys } from './query/keys';
 export { fetchTasks, fetchProjects } from './query/queries';
 export { useTasks, useTask, useProjects, useProject } from './query/hooks';
+
+// Mutation layer (S-3.5): partial-only updates (FR-8).
+export { updateTask, updateProject, type TaskPatch, type ProjectPatch } from './mutations';
