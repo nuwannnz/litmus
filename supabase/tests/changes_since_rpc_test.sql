@@ -77,8 +77,10 @@ insert into auth.users (id, email) values
 
 -- handle_new_user() mirrors each auth row into public.users via the signup
 -- trigger; if that ever stops holding, everything downstream is meaningless.
+-- Compared as a ratio, not a constant: seed.sql legitimately ships its own
+-- user, so a hard count would couple this test to the seed's contents.
 select ok(
-  (select count(*) from public.users) = 2,
+  (select count(*) from public.users) = (select count(*) from auth.users),
   'signup trigger created one profile per auth user'
 );
 
