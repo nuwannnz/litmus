@@ -1,0 +1,18 @@
+# Cloudflare Pages configuration for Litmus.
+#
+# Lives in `src/client` rather than the repo root because:
+#   - `pages_build_output_dir` is resolved relative to this file, and the Vite
+#     build already emits to `src/client/dist/apps/web`
+#     (apps/web/vite.config.ts), so the path stays short and obvious here;
+#   - both deploy workflows run with `working-directory: src/client` anyway
+#     (see .github/workflows/ci.yml for that convention), so `wrangler pages
+#     deploy` picks this file up from its working directory with no extra
+#     --config flag.
+#
+# Deployed by `.github/workflows/deploy-dev.yml` on push to `develop`.
+# deploy-prod.yml (§6.3 of docs/architecture.md) will reuse this same file —
+# only its trigger differs — so nothing here is dev-specific.
+
+name = "litmus-app"
+pages_build_output_dir = "dist/apps/web"
+compatibility_date = "2026-08-25"
