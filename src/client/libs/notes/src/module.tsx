@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { uid } from '@litmus/domain';
+import { uuidv7 } from '@litmus/domain';
 import {
   appPaths,
   useAllNotes,
@@ -31,7 +31,7 @@ function NoteCommands() {
         label: 'New note',
         icon: 'note',
         run: () => {
-          const id = uid('n-');
+          const id = uuidv7();
           dispatch({ type: 'note/add', id });
           navigate(appPaths.note(id));
         },
